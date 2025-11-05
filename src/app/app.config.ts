@@ -1,17 +1,36 @@
-import { ApplicationConfig, provideBrowserGlobalErrorListeners, provideZoneChangeDetection } from '@angular/core';
-import { provideRouter } from '@angular/router';
+// import { ApplicationConfig, provideBrowserGlobalErrorListeners, provideZoneChangeDetection } from '@angular/core';
+// import { provideRouter } from '@angular/router';
 
+// import { routes } from './app.routes';
+// import { provideHttpClient, withFetch, withInterceptors,  } from '@angular/common/http';
+// import { credentialsInterceptor } from './interceptors/cookiesInterceptors';
+
+// export const appConfig: ApplicationConfig = {
+//   providers: [
+//     provideBrowserGlobalErrorListeners(),
+//     provideZoneChangeDetection({ eventCoalescing: true }),
+//     provideRouter(routes),
+//     provideHttpClient(withFetch(), withInterceptors([
+//         credentialsInterceptor 
+//       ])),
+//   ]
+// };
+import { ApplicationConfig, importProvidersFrom } from '@angular/core';
+import { provideRouter } from '@angular/router';
 import { routes } from './app.routes';
-import { provideHttpClient, withFetch, withInterceptors,  } from '@angular/common/http';
-import { credentialsInterceptor } from './interceptors/cookiesInterceptors';
+import {
+  HttpClientModule,
+  provideHttpClient,
+  withFetch,
+} from '@angular/common/http';
 
 export const appConfig: ApplicationConfig = {
   providers: [
-    provideBrowserGlobalErrorListeners(),
-    provideZoneChangeDetection({ eventCoalescing: true }),
+    // Habilita el router de Angular
     provideRouter(routes),
-    provideHttpClient(withFetch(), withInterceptors([
-        credentialsInterceptor 
-      ])),
-  ]
+
+    // Habilita HttpClient para hacer peticiones
+    importProvidersFrom(HttpClientModule),
+    provideHttpClient(withFetch()),
+  ],
 };

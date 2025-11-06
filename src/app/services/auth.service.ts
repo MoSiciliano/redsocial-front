@@ -1,52 +1,3 @@
-// import { HttpClient } from '@angular/common/http';
-// import { inject, Injectable } from '@angular/core';
-// import { Credentials } from '../models/credentials';
-
-// @Injectable({
-//   providedIn: 'root',
-// })
-// export class Auth {
-//   httpClient = inject(HttpClient);
-
-//   //apiUrl = 'https://morena-siciliano-redsocial-back.vercel.app';
-//    apiUrl = 'http://localhost:3000';
-//   async login(credentials: Credentials) {
-//     const req = this.httpClient.post(this.apiUrl + '/auth/login', credentials, {
-//       headers: { 'Content-Type': 'application/json' },
-//     });
-//     req.subscribe((res: any) => {
-//       console.log(res);
-//       localStorage.setItem('token', res.token);
-//     });
-//   }
-
-//   async loginCookie(credentials: Credentials) {
-//     const req = this.httpClient.post(this.apiUrl + '/auth/login/cookie', credentials, {
-//       withCredentials: true,
-//     });
-//     req.subscribe((res) => {
-//       console.log(res);
-//     });
-//   }
-//   // getData() {
-//   //   const req = this.httpClient.get(this.apiUrl + '/auth/data/jwt', {
-//   //     headers: {
-//   //       Authorization: 'Bearer ' + localStorage.getItem('token'),
-//   //     },
-//   //   });
-//   //   req.subscribe((res) => {
-//   //     console.log(res);
-//   //   });
-//   // }
-//   // getDataCookie() {
-//   //   const req = this.httpClient.get(this.apiUrl + '/auth/data/cookie', {
-//   //     withCredentials: true,
-//   //   });
-//   //   req.subscribe((res) => {
-//   //     console.log(res);
-//   //   });
-//   // }
-// }
 import { Injectable, inject, signal } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
@@ -60,27 +11,26 @@ import { User } from '../models/user';
   providedIn: 'root',
 })
 export class AuthService {
-  private apiUrl = 'https://morena-siciliano-redsocial-back.vercel.app' // URL de tu backend
+  private apiUrl = 'https://morena-siciliano-redsocial-back.vercel.app';
   private http = inject(HttpClient);
   private modalService = inject(ModalService);
   private router = inject(Router);
 
   // Señales para el estado de autenticación
   currentUser = signal<User | null>(null);
-  authToken = signal<string | null>(null);
+  // authToken = signal<string | null>(null); // <-- Chau token
   isLoading = signal(false);
 
   constructor() {
-    // Al iniciar el servicio, intentar cargar el token desde localStorage
-    this.loadTokenFromStorage();
+    // Al iniciar el servicio, intentar cargar el usuario desde localStorage
+    this.loadUserFromStorage();
   }
 
-  private loadTokenFromStorage() {
+  private loadUserFromStorage() {
     if (typeof localStorage !== 'undefined') {
-      const token = localStorage.getItem('authToken');
+      // Ya no leemos el token, solo el usuario
       const user = localStorage.getItem('currentUser');
-      if (token && user) {
-        this.authToken.set(token);
+      if (user) {
         try {
           this.currentUser.set(JSON.parse(user) as User);
         } catch (e) {
@@ -94,14 +44,15 @@ export class AuthService {
   login(credentials: Credentials): Observable<any> {
     this.isLoading.set(true);
     return this.http
-      .post(`${this.apiUrl}/auth/login`, credentials)
+      .post(`${this.apiUrl}/auth/login`, credentials) // El interceptor agrega withCredentials
       .pipe(
         tap((res: any) => {
-          this.authToken.set(res.token);
+          // this.authToken.set(res.token); // <-- Chau token
           this.currentUser.set(res.user as User);
-          // Guardar en localStorage
+
+          // Guardar solo el usuario en localStorage
           if (typeof localStorage !== 'undefined') {
-            localStorage.setItem('authToken', res.token);
+            // localStorage.setItem('authToken', res.token); // <-- Chau token
             localStorage.setItem('currentUser', JSON.stringify(res.user));
           }
           this.isLoading.set(false);
@@ -111,7 +62,39 @@ export class AuthService {
       );
   }
 
-  register(userData: any): Observable<any> {
+  // ... (register lo vemos en la sección de imágenes) ...
+
+  logout() {
+    this.isLoading.set(true); // Opcional, para que se vea un feedback
+
+    // Llamamos al endpoint de logout del back para que borre la cookie
+    this.http.post(`${this.apiUrl}/auth/logout`, {}).pipe(
+      // tap y catchError por si falla, pero el finalize se ejecuta siempre
+      tap(() => console.log('Cookie de backend borrada')),
+      catchError((err) => {
+        console.error('Error al hacer logout en backend', err);
+        // No importa si falla, limpiamos el front igual
+        return throwError(() => new Error('Error de logout en backend'));
+      }),
+      finalize(() => {
+        // Esto se ejecuta SIEMPRE (éxito o error)
+        this.isLoading.set(false);
+        this.currentUser.set(null);
+        // this.authToken.set(null); // <-- Chau token
+
+        // Limpiar localStorage
+        if (typeof localStorage !== 'undefined') {
+          // localStorage.removeItem('authToken'); // <-- Chau token
+          localStorage.removeItem('currentUser');
+        }
+        // Redirigir al login
+        this.router.navigate(['/login']);
+      })
+    ).subscribe(); // No te olvides de suscribirte!
+  }
+
+  // ... (register y handleError quedan igual por ahora) ...
+  register(userData: any): Observable<any> { //... (lo modificamos abajo)
     this.isLoading.set(true);
     return this.http.post(`${this.apiUrl}/auth/register`, userData).pipe(
       tap((res: any) => {
@@ -124,18 +107,6 @@ export class AuthService {
       catchError((err) => this.handleError(err, 'Error de Registro')),
       finalize(() => this.isLoading.set(false))
     );
-  }
-
-  logout() {
-    this.currentUser.set(null);
-    this.authToken.set(null);
-    // Limpiar localStorage
-    if (typeof localStorage !== 'undefined') {
-      localStorage.removeItem('authToken');
-      localStorage.removeItem('currentUser');
-    }
-    // Redirigir al login
-    this.router.navigate(['/login']);
   }
 
   private handleError(
@@ -156,7 +127,7 @@ export class AuthService {
       }
     } else if (error.status === 0 || error.status === 503) {
       message =
-        'Error de conexión. ¿El servidor backend (NestJS) está corriendo en http://localhost:3000?';
+        'Error de conexión. ¿El servidor backend (NestJS) está corriendo?';
     }
 
     this.modalService.show(title, message);

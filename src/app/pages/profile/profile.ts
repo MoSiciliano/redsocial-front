@@ -1,3 +1,5 @@
+// src/app/pages/profile/profile.ts
+
 import { Component, ChangeDetectionStrategy, inject } from '@angular/core';
 import { CommonModule, JsonPipe } from '@angular/common';
 import { NavbarComponent } from '../../components/nav/nav';
@@ -18,12 +20,10 @@ import { AuthService } from '../../services/auth.service';
         <h2 class="text-xl font-semibold text-white">Datos del Usuario (Debug)</h2>
         <pre class="mt-4 overflow-auto rounded bg-gray-900 p-4 text-sm text-green-300"
           >{{ user | json }}
-        </pre
+        </pre>
         >
-        <p class="mt-4 text-sm text-gray-400">
-          Token: {{ authService.authToken()?.substring(0, 30) }}...
-        </p>
-      </div>
+        
+        </div>
       }
     </main>
   `,

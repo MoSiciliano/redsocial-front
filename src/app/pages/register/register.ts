@@ -1,4 +1,6 @@
-import { Component, ChangeDetectionStrategy, inject } from '@angular/core';
+// src/app/pages/register/register.ts
+
+import { Component, ChangeDetectionStrategy, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
   ReactiveFormsModule,
@@ -6,14 +8,15 @@ import {
   FormControl,
   Validators,
 } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router'; // <-- Importa RouterLink
 import { AuthService } from '../../services/auth.service';
 import { passwordMatchValidator } from '../../validators/password';
+import { ageRangeValidator } from '../../validators/age'; // <-- Importa el validador de edad
 
 @Component({
   selector: 'app-register',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterLink],
+  imports: [CommonModule, ReactiveFormsModule, RouterLink], // <-- Agrega RouterLink
   template: `
     <div
       class="flex min-h-screen items-center justify-center bg-gray-900 px-4 py-12"
@@ -27,10 +30,9 @@ import { passwordMatchValidator } from '../../validators/password';
 
         <form
           [formGroup]="registerForm"
-          (ngSubmit)="onSubmit()"
+          (ngSubmit)="onSubmit()" 
           class="grid grid-cols-1 gap-x-6 gap-y-4 md:grid-cols-2"
         >
-          <!-- Nombre -->
           <div>
             <label
               for="name"
@@ -52,11 +54,16 @@ import { passwordMatchValidator } from '../../validators/password';
               (registerForm.get('name')?.dirty ||
                 registerForm.get('name')?.touched)
             ) {
-            <p class="mt-1 text-xs text-red-400">Nombre es requerido.</p>
+            <p class="mt-1 text-xs text-red-400">
+              @if (registerForm.get('name')?.errors?.['required']) {
+              Nombre es requerido.
+              } @if (registerForm.get('name')?.errors?.['pattern']) {
+              Solo letras y espacios.
+              }
+            </p>
             }
           </div>
 
-          <!-- Apellido -->
           <div>
             <label
               for="lastname"
@@ -78,11 +85,16 @@ import { passwordMatchValidator } from '../../validators/password';
               (registerForm.get('lastname')?.dirty ||
                 registerForm.get('lastname')?.touched)
             ) {
-            <p class="mt-1 text-xs text-red-400">Apellido es requerido.</p>
+            <p class="mt-1 text-xs text-red-400">
+              @if (registerForm.get('lastname')?.errors?.['required']) {
+              Apellido es requerido.
+              } @if (registerForm.get('lastname')?.errors?.['pattern']) {
+              Solo letras y espacios.
+              }
+            </p>
             }
           </div>
 
-          <!-- Email -->
           <div class="md:col-span-2">
             <label
               for="email"
@@ -114,7 +126,6 @@ import { passwordMatchValidator } from '../../validators/password';
             }
           </div>
 
-          <!-- Nombre de Usuario -->
           <div>
             <label
               for="username"
@@ -140,7 +151,6 @@ import { passwordMatchValidator } from '../../validators/password';
             }
           </div>
 
-          <!-- Fecha de Nacimiento -->
           <div>
             <label
               for="birthdate"
@@ -163,12 +173,19 @@ import { passwordMatchValidator } from '../../validators/password';
                 registerForm.get('birthdate')?.touched)
             ) {
             <p class="mt-1 text-xs text-red-400">
-              Fecha de nacimiento es requerida.
+              @if (registerForm.get('birthdate')?.errors?.['required']) {
+              Fecha requerida.
+              } @if (registerForm.get('birthdate')?.errors?.['minAge']) {
+              Debes tener al menos 13 años.
+              } @if (registerForm.get('birthdate')?.errors?.['maxAge']) {
+              Edad máxima 100 años.
+              } @if (registerForm.get('birthdate')?.errors?.['invalidDate']) {
+              Fecha inválida.
+              }
             </p>
             }
           </div>
 
-          <!-- Contraseña -->
           <div>
             <label
               for="password"
@@ -200,7 +217,6 @@ import { passwordMatchValidator } from '../../validators/password';
             }
           </div>
 
-          <!-- Repetir Contraseña -->
           <div>
             <label
               for="confirmPassword"
@@ -238,27 +254,30 @@ import { passwordMatchValidator } from '../../validators/password';
             }
           </div>
 
-          <!-- URL Imagen de Perfil -->
           <div class="md:col-span-2">
             <label
               for="imagenPerfil"
               class="mb-2 block text-sm font-medium text-gray-300"
-              >URL de Imagen de Perfil (Opcional)</label
+              >Imagen de Perfil (Opcional)</label
             >
             <input
               id="imagenPerfil"
-              formControlName="imagenPerfil"
-              type="text"
-              placeholder="https://ejemplo.com/imagen.png"
-              class="w-full rounded-md border border-gray-600 bg-gray-700 px-3 py-2 text-white placeholder-gray-400 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+              type="file"
+              (change)="onFileSelected($event)"
+              accept="image/png, image/jpeg, image/webp"
+              class="w-full text-sm text-gray-400
+                file:mr-4 file:rounded-md file:border-0
+                file:bg-blue-600 file:px-4 file:py-2
+                file:text-sm file:font-semibold file:text-white
+                hover:file:bg-blue-700 file:cursor-pointer"
             />
-            <p class="mt-1 text-xs text-gray-400">
-              Tu backend espera una URL, no un archivo. Pega el link a tu imagen
-              acá.
+            @if (selectedFile(); as file) {
+            <p class="mt-2 text-xs text-green-400">
+              Archivo seleccionado: {{ file.name }}
             </p>
+            }
           </div>
 
-          <!-- Descripción -->
           <div class="md:col-span-2">
             <label
               for="description"
@@ -273,10 +292,10 @@ import { passwordMatchValidator } from '../../validators/password';
             ></textarea>
           </div>
 
-          <!-- Submit Button -->
           <div class="md:col-span-2">
             <button
               type="submit"
+              [disabled]="registerForm.invalid || authService.isLoading()"
               class="w-full rounded-md bg-blue-600 px-4 py-2 text-white transition duration-300 hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
             >
               @if (authService.isLoading()) {
@@ -290,7 +309,6 @@ import { passwordMatchValidator } from '../../validators/password';
           </div>
         </form>
 
-        <!-- Link to Login -->
         <p class="mt-6 text-center text-sm text-gray-400">
           ¿Ya tenés cuenta?
           <a
@@ -309,14 +327,25 @@ export class Register {
   authService = inject(AuthService);
   router = inject(Router);
 
-  // Expresión regular para la contraseña:
-  // 8+ caracteres, 1 mayúscula, 1 número.
+  // Regex para contraseña
   passwordPattern = '^(?=.*[A-Z])(?=.*\\d).{8,}$';
+  
+  // Regex para nombres (letras, espacios, acentos, ñ)
+  namePattern = '^[a-zA-ZáéíóúÁÉÍÓÚñÑ ]+$';
+  
+  // Signal para guardar el archivo
+  selectedFile = signal<File | null>(null);
 
   registerForm = new FormGroup(
     {
-      name: new FormControl('', [Validators.required]),
-      lastname: new FormControl('', [Validators.required]),
+      name: new FormControl('', [
+        Validators.required,
+        Validators.pattern(this.namePattern), // Validación de nombre
+      ]),
+      lastname: new FormControl('', [
+        Validators.required,
+        Validators.pattern(this.namePattern), // Validación de apellido
+      ]),
       email: new FormControl('', [Validators.required, Validators.email]),
       username: new FormControl('', [Validators.required]),
       password: new FormControl('', [
@@ -324,24 +353,58 @@ export class Register {
         Validators.pattern(this.passwordPattern),
       ]),
       confirmPassword: new FormControl('', [Validators.required]),
-      birthdate: new FormControl('', [Validators.required]),
+      birthdate: new FormControl('', [
+        Validators.required,
+        ageRangeValidator(13, 100), // Validación de edad
+      ]),
       description: new FormControl(''),
-      imagenPerfil: new FormControl(''),
+      // El input de imagen no es parte del FormGroup
     },
     { validators: passwordMatchValidator }
   );
 
+  /**
+   * Captura el archivo seleccionado por el usuario.
+   */
+  onFileSelected(event: Event) {
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files.length > 0) {
+      this.selectedFile.set(input.files[0]);
+    } else {
+      this.selectedFile.set(null);
+    }
+  }
+
+  /**
+   * Envía el formulario de registro.
+   */
   onSubmit() {
     if (this.registerForm.invalid) {
       this.registerForm.markAllAsTouched();
       return;
     }
 
-    // Quitamos confirmPassword antes de enviar al backend
-    const userData = this.registerForm.value;
+    // 1. Crear FormData para enviar datos y archivo
+    const formData = new FormData();
 
-    this.authService.register(userData).subscribe(() => {
-      // El servicio muestra el modal de éxito
+    // 2. Agregar todos los campos del formulario al FormData
+    Object.keys(this.registerForm.controls).forEach(key => {
+      const control = this.registerForm.get(key);
+      if (control) {
+        // Asegurarnos de que no mandamos 'confirmPassword'
+        if (key !== 'confirmPassword') {
+          formData.append(key, control.value);
+        }
+      }
+    });
+      
+    // 3. Agregar el archivo (si existe)
+    if (this.selectedFile()) {
+      formData.append('imagenPerfil', this.selectedFile()!);
+    }
+
+    // 4. Enviar FormData al servicio de autenticación
+    this.authService.register(formData).subscribe(() => {
       this.router.navigate(['/login']);
     });
   }

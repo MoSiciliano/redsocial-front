@@ -13,14 +13,13 @@
 import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterOutlet } from '@angular/router';
-import { HttpClientModule } from '@angular/common/http';
 import { ModalComponent } from './components/modal/modal';
 
 @Component({
   selector: 'app-root',
   standalone: true,
   // Importa el RouterOutlet y tu ModalComponent global
-  imports: [CommonModule, RouterOutlet, ModalComponent, HttpClientModule],
+  imports: [CommonModule, RouterOutlet, ModalComponent],
   template: `
     <!-- 
       Agrego el Favicon y Tailwind aquí 

@@ -256,12 +256,12 @@ import { ageRangeValidator } from '../../validators/age'; // <-- Importa el vali
 
           <div class="md:col-span-2">
             <label
-              for="imagenPerfil"
+              for="imageProfile"
               class="mb-2 block text-sm font-medium text-gray-300"
               >Imagen de Perfil (Opcional)</label
             >
             <input
-              id="imagenPerfil"
+              id="imageProfile"
               type="file"
               (change)="onFileSelected($event)"
               accept="image/png, image/jpeg, image/webp"
@@ -391,16 +391,13 @@ export class Register {
     Object.keys(this.registerForm.controls).forEach(key => {
       const control = this.registerForm.get(key);
       if (control) {
-        // Asegurarnos de que no mandamos 'confirmPassword'
-        if (key !== 'confirmPassword') {
           formData.append(key, control.value);
-        }
       }
     });
       
     // 3. Agregar el archivo (si existe)
     if (this.selectedFile()) {
-      formData.append('imagenPerfil', this.selectedFile()!);
+      formData.append('imageProfile', this.selectedFile()!);
     }
 
     // 4. Enviar FormData al servicio de autenticación

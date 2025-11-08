@@ -1,5 +1,3 @@
-// src/app/pages/register/register.ts
-
 import { Component, ChangeDetectionStrategy, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
@@ -8,330 +6,25 @@ import {
   FormControl,
   Validators,
 } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router'; // <-- Importa RouterLink
+import { Router, RouterLink } from '@angular/router'; 
 import { AuthService } from '../../services/auth.service';
 import { passwordMatchValidator } from '../../validators/password';
-import { ageRangeValidator } from '../../validators/age'; // <-- Importa el validador de edad
+import { ageRangeValidator } from '../../validators/age'; 
 
 @Component({
   selector: 'app-register',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterLink], // <-- Agrega RouterLink
-  template: `
-    <div
-      class="flex min-h-screen items-center justify-center bg-gray-900 px-4 py-12"
-    >
-      <div
-        class="w-full max-w-2xl rounded-xl bg-gray-800 p-8 shadow-2xl"
-      >
-        <h1 class="mb-8 text-center text-3xl font-bold text-white">
-          Crear una Cuenta
-        </h1>
-
-        <form
-          [formGroup]="registerForm"
-          (ngSubmit)="onSubmit()" 
-          class="grid grid-cols-1 gap-x-6 gap-y-4 md:grid-cols-2"
-        >
-          <div>
-            <label
-              for="name"
-              class="mb-2 block text-sm font-medium text-gray-300"
-              >Nombre</label
-            >
-            <input
-              id="name"
-              formControlName="name"
-              type="text"
-              class="w-full rounded-md border border-gray-600 bg-gray-700 px-3 py-2 text-white placeholder-gray-400 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
-              [class.border-red-500]="
-                registerForm.get('name')?.invalid &&
-                registerForm.get('name')?.touched
-              "
-            />
-            @if (
-              registerForm.get('name')?.invalid &&
-              (registerForm.get('name')?.dirty ||
-                registerForm.get('name')?.touched)
-            ) {
-            <p class="mt-1 text-xs text-red-400">
-              @if (registerForm.get('name')?.errors?.['required']) {
-              Nombre es requerido.
-              } @if (registerForm.get('name')?.errors?.['pattern']) {
-              Solo letras y espacios.
-              }
-            </p>
-            }
-          </div>
-
-          <div>
-            <label
-              for="lastname"
-              class="mb-2 block text-sm font-medium text-gray-300"
-              >Apellido</label
-            >
-            <input
-              id="lastname"
-              formControlName="lastname"
-              type="text"
-              class="w-full rounded-md border border-gray-600 bg-gray-700 px-3 py-2 text-white placeholder-gray-400 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
-              [class.border-red-500]="
-                registerForm.get('lastname')?.invalid &&
-                registerForm.get('lastname')?.touched
-              "
-            />
-            @if (
-              registerForm.get('lastname')?.invalid &&
-              (registerForm.get('lastname')?.dirty ||
-                registerForm.get('lastname')?.touched)
-            ) {
-            <p class="mt-1 text-xs text-red-400">
-              @if (registerForm.get('lastname')?.errors?.['required']) {
-              Apellido es requerido.
-              } @if (registerForm.get('lastname')?.errors?.['pattern']) {
-              Solo letras y espacios.
-              }
-            </p>
-            }
-          </div>
-
-          <div class="md:col-span-2">
-            <label
-              for="email"
-              class="mb-2 block text-sm font-medium text-gray-300"
-              >Email</label
-            >
-            <input
-              id="email"
-              formControlName="email"
-              type="email"
-              class="w-full rounded-md border border-gray-600 bg-gray-700 px-3 py-2 text-white placeholder-gray-400 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
-              [class.border-red-500]="
-                registerForm.get('email')?.invalid &&
-                registerForm.get('email')?.touched
-              "
-            />
-            @if (
-              registerForm.get('email')?.invalid &&
-              (registerForm.get('email')?.dirty ||
-                registerForm.get('email')?.touched)
-            ) {
-            <p class="mt-1 text-xs text-red-400">
-              @if (registerForm.get('email')?.errors?.['required']) {
-              Email es requerido.
-              } @if (registerForm.get('email')?.errors?.['email']) {
-              Debe ser un email válido.
-              }
-            </p>
-            }
-          </div>
-
-          <div>
-            <label
-              for="username"
-              class="mb-2 block text-sm font-medium text-gray-300"
-              >Nombre de Usuario</label
-            >
-            <input
-              id="username"
-              formControlName="username"
-              type="text"
-              class="w-full rounded-md border border-gray-600 bg-gray-700 px-3 py-2 text-white placeholder-gray-400 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
-              [class.border-red-500]="
-                registerForm.get('username')?.invalid &&
-                registerForm.get('username')?.touched
-              "
-            />
-            @if (
-              registerForm.get('username')?.invalid &&
-              (registerForm.get('username')?.dirty ||
-                registerForm.get('username')?.touched)
-            ) {
-            <p class="mt-1 text-xs text-red-400">Usuario es requerido.</p>
-            }
-          </div>
-
-          <div>
-            <label
-              for="birthdate"
-              class="mb-2 block text-sm font-medium text-gray-300"
-              >Fecha de Nacimiento</label
-            >
-            <input
-              id="birthdate"
-              formControlName="birthdate"
-              type="date"
-              class="w-full rounded-md border border-gray-600 bg-gray-700 px-3 py-2 text-white placeholder-gray-400 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
-              [class.border-red-500]="
-                registerForm.get('birthdate')?.invalid &&
-                registerForm.get('birthdate')?.touched
-              "
-            />
-            @if (
-              registerForm.get('birthdate')?.invalid &&
-              (registerForm.get('birthdate')?.dirty ||
-                registerForm.get('birthdate')?.touched)
-            ) {
-            <p class="mt-1 text-xs text-red-400">
-              @if (registerForm.get('birthdate')?.errors?.['required']) {
-              Fecha requerida.
-              } @if (registerForm.get('birthdate')?.errors?.['minAge']) {
-              Debes tener al menos 13 años.
-              } @if (registerForm.get('birthdate')?.errors?.['maxAge']) {
-              Edad máxima 100 años.
-              } @if (registerForm.get('birthdate')?.errors?.['invalidDate']) {
-              Fecha inválida.
-              }
-            </p>
-            }
-          </div>
-
-          <div>
-            <label
-              for="password"
-              class="mb-2 block text-sm font-medium text-gray-300"
-              >Contraseña</label
-            >
-            <input
-              id="password"
-              formControlName="password"
-              type="password"
-              class="w-full rounded-md border border-gray-600 bg-gray-700 px-3 py-2 text-white placeholder-gray-400 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
-              [class.border-red-500]="
-                registerForm.get('password')?.invalid &&
-                registerForm.get('password')?.touched
-              "
-            />
-            @if (
-              registerForm.get('password')?.invalid &&
-              (registerForm.get('password')?.dirty ||
-                registerForm.get('password')?.touched)
-            ) {
-            <p class="mt-1 text-xs text-red-400">
-              @if (registerForm.get('password')?.errors?.['required']) {
-              Requerida.
-              } @if (registerForm.get('password')?.errors?.['pattern']) {
-              Debe tener 8+ caracteres, 1 mayúscula y 1 número.
-              }
-            </p>
-            }
-          </div>
-
-          <div>
-            <label
-              for="confirmPassword"
-              class="mb-2 block text-sm font-medium text-gray-300"
-              >Repetir Contraseña</label
-            >
-            <input
-              id="confirmPassword"
-              formControlName="confirmPassword"
-              type="password"
-              class="w-full rounded-md border border-gray-600 bg-gray-700 px-3 py-2 text-white placeholder-gray-400 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
-              [class.border-red-500]="
-                (registerForm.get('confirmPassword')?.invalid &&
-                  registerForm.get('confirmPassword')?.touched) ||
-                (registerForm.errors?.['passwordMismatch'] &&
-                  registerForm.get('confirmPassword')?.touched)
-              "
-            />
-            @if (
-              registerForm.get('confirmPassword')?.invalid &&
-              (registerForm.get('confirmPassword')?.dirty ||
-                registerForm.get('confirmPassword')?.touched)
-            ) {
-            <p class="mt-1 text-xs text-red-400">
-              @if (registerForm.get('confirmPassword')?.errors?.['required']) {
-              Requerida.
-              }
-            </p>
-            } @if (
-              registerForm.errors?.['passwordMismatch'] &&
-              (registerForm.get('confirmPassword')?.dirty ||
-                registerForm.get('confirmPassword')?.touched)
-            ) {
-            <p class="mt-1 text-xs text-red-400">Las contraseñas no coinciden.</p>
-            }
-          </div>
-
-          <div class="md:col-span-2">
-            <label
-              for="imageProfile"
-              class="mb-2 block text-sm font-medium text-gray-300"
-              >Imagen de Perfil (Opcional)</label
-            >
-            <input
-              id="imageProfile"
-              type="file"
-              (change)="onFileSelected($event)"
-              accept="image/png, image/jpeg, image/webp"
-              class="w-full text-sm text-gray-400
-                file:mr-4 file:rounded-md file:border-0
-                file:bg-blue-600 file:px-4 file:py-2
-                file:text-sm file:font-semibold file:text-white
-                hover:file:bg-blue-700 file:cursor-pointer"
-            />
-            @if (selectedFile(); as file) {
-            <p class="mt-2 text-xs text-green-400">
-              Archivo seleccionado: {{ file.name }}
-            </p>
-            }
-          </div>
-
-          <div class="md:col-span-2">
-            <label
-              for="description"
-              class="mb-2 block text-sm font-medium text-gray-300"
-              >Descripción Breve (Opcional)</label
-            >
-            <textarea
-              id="description"
-              formControlName="description"
-              rows="3"
-              class="w-full rounded-md border border-gray-600 bg-gray-700 px-3 py-2 text-white placeholder-gray-400 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
-            ></textarea>
-          </div>
-
-          <div class="md:col-span-2">
-            <button
-              type="submit"
-              [disabled]="registerForm.invalid || authService.isLoading()"
-              class="w-full rounded-md bg-blue-600 px-4 py-2 text-white transition duration-300 hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
-            >
-              @if (authService.isLoading()) {
-              <div
-                class="mx-auto h-5 w-5 animate-spin rounded-full border-2 border-white border-t-transparent"
-              ></div>
-              } @else {
-              Registrarse
-              }
-            </button>
-          </div>
-        </form>
-
-        <p class="mt-6 text-center text-sm text-gray-400">
-          ¿Ya tenés cuenta?
-          <a
-            routerLink="/login"
-            class="cursor-pointer font-medium text-blue-400 hover:text-blue-300"
-          >
-            Iniciá sesión
-          </a>
-        </p>
-      </div>
-    </div>
-  `,
+  imports: [CommonModule, ReactiveFormsModule, RouterLink], 
+  templateUrl: 'register.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class Register {
   authService = inject(AuthService);
   router = inject(Router);
 
-  // Regex para contraseña
   passwordPattern = '^(?=.*[A-Z])(?=.*\\d).{8,}$';
-  
-  // Regex para nombres (letras, espacios, acentos, ñ)
   namePattern = '^[a-zA-ZáéíóúÁÉÍÓÚñÑ ]+$';
+  usernamePattern = '^[a-zA-Z0-9_-]{3,20}$'; 
   
   // Signal para guardar el archivo
   selectedFile = signal<File | null>(null);
@@ -347,7 +40,7 @@ export class Register {
         Validators.pattern(this.namePattern), // Validación de apellido
       ]),
       email: new FormControl('', [Validators.required, Validators.email]),
-      username: new FormControl('', [Validators.required]),
+      username: new FormControl('', [Validators.required, Validators.minLength(4), Validators.maxLength(15), Validators.pattern(this.usernamePattern)]),
       password: new FormControl('', [
         Validators.required,
         Validators.pattern(this.passwordPattern),

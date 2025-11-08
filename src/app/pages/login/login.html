@@ -1,5 +1,117 @@
-<p>login works!</p>
-<button (click)="login()">iniciar sesion</button>
-<!-- <button (click)="getData()"></button> -->
-<button (click)="loginCookie()">iniciar sesion COOKIE</button>
-<!-- <button (click)="getDataCookie()"></button> -->
+<div
+      class="relative flex min-h-screen w-full items-center justify-center overflow-hidden bg-background p-4"
+    >
+      <div
+        class="spark"
+        style="top: 10%; left: 20%; animation-delay: -1s;"
+      ></div>
+      <div
+        class="spark"
+        style="top: 40%; left: 80%; animation-delay: -3s;"
+      ></div>
+      <div
+        class="spark"
+        style="top: 70%; left: 10%; animation-delay: -5s;"
+      ></div>
+      <div
+        class="spark"
+        style="top: 80%; left: 60%; animation-delay: -2s;"
+      ></div>
+      <div
+        class="spark"
+        style="top: 25%; left: 50%; animation-delay: -7s;"
+      ></div>
+      <div
+        class="spark"
+        style="top: 90%; left: 90%; animation-delay: -4s;"
+      ></div>
+
+      <div
+        class="relative z-10 w-full max-w-md rounded-2xl border border-muted/20 bg-card/60 p-8 shadow-2xl shadow-primary/10 backdrop-blur-lg animate-fade-in-down"
+      >
+        <h1 class="mb-4 text-center text-5xl font-extrabold text-primary">
+          SPARKIT
+        </h1>
+        <p class="mb-10 text-center text-muted">
+          Donde las ideas se encuentran.
+        </p>
+
+        <form
+          [formGroup]="loginForm"
+          (ngSubmit)="onSubmit()"
+          class="space-y-8"
+        >
+          <div
+            class="relative rounded-t-lg border-b-2 border-muted bg-card/50 transition duration-300 focus-within:border-primary"
+          >
+            <input
+              id="identifier"
+              formControlName="identifier"
+              type="text"
+              class="peer block w-full appearance-none bg-transparent px-3 py-3 text-maintext focus:outline-none focus:ring-0"
+              placeholder=" "
+            />
+            <label
+              for="identifier"
+              class="absolute top-4 left-3 z-10 origin-[0] -translate-y-6 scale-75 transform text-sm text-muted duration-300 peer-placeholder-shown:translate-y-0 peer-placeholder-shown:scale-100 peer-focus:-translate-y-6 peer-focus:scale-75 peer-focus:text-primary"
+              >Email o Usuario</label
+            >
+          </div>
+          @if (loginForm.get('identifier')?.invalid &&
+          loginForm.get('identifier')?.touched) {
+          <p class="-mt-6 text-xs text-danger">
+            Por favor, ingresá tu email o usuario.
+          </p>
+          }
+
+          <div
+            class="relative rounded-t-lg border-b-2 border-muted bg-card/50 transition duration-300 focus-within:border-primary"
+          >
+            <input
+              id="password"
+              formControlName="password"
+              type="password"
+              class="peer block w-full appearance-none bg-transparent px-3 py-3 text-maintext focus:outline-none focus:ring-0"
+              placeholder=" "
+            />
+            <label
+              for="password"
+              class="absolute top-4 left-3 z-10 origin-[0] -translate-y-6 scale-75 transform text-sm text-muted duration-300 peer-placeholder-shown:translate-y-0 peer-placeholder-shown:scale-100 peer-focus:-translate-y-6 peer-focus:scale-75 peer-focus:text-primary"
+              >Contraseña</label
+            >
+          </div>
+          @if (loginForm.get('password')?.invalid &&
+          loginForm.get('password')?.touched) {
+          <p class="-mt-6 text-xs text-danger">
+            Contraseña es requerida.
+          </p>
+          }
+
+          <div class="pt-4">
+            <button
+              type="submit"
+              [disabled]="loginForm.invalid || authService.isLoading()"
+              class="w-full transform rounded-lg bg-primary px-4 py-3 font-bold text-background shadow-md transition-all duration-300 ease-in-out hover:-translate-y-0.5 hover:scale-[1.02] hover:shadow-lg hover:shadow-primary/30 focus:outline-none focus:ring-4 focus:ring-primary/30 disabled:translate-y-0 disabled:scale-100 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              @if (authService.isLoading()) {
+              <div
+                class="mx-auto h-5 w-5 animate-spin rounded-full border-2 border-background border-t-transparent"
+              ></div>
+              } @else {
+              Ingresar
+              }
+            </button>
+          </div>
+        </form>
+
+        <p class="mt-8 text-center text-sm text-muted">
+          ¿No tenés cuenta?
+          <a
+            routerLink="/register"
+            class="font-medium text-secondary transition-colors hover:text-purple-400"
+          >
+            Creá una cuenta
+          </a>
+        </p>
+      </div>
+    </div>

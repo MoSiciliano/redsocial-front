@@ -2,18 +2,10 @@
 <html lang="es">
   <head>
     <meta charset="utf-8" />
-    <title>Red Social</title>
+    <title>SparkIt</title>
     <base href="/" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    
-    <!-- Favicon (El que te generé antes) -->
-    <link
-      rel="icon"
-      type="image/svg+xml"
-      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke-width='1.5' stroke='%2338bdf8' class='w-6 h-6'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M8.625 12a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H8.25m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H12m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0h-.375M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z' /%3E%3C/svg%3E"
-    />
-
-    <!-- Google Font: Inter -->
+    <link rel="icon" type="image/svg" href="../public/FAVICO.svg" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -21,23 +13,72 @@
       rel="stylesheet"
     />
 
-    <!-- Tailwind CSS (Play CDN) -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
-      // Configuración de Tailwind
+      // Configuración de Tailwind con la paleta "NOCHE DE IDEAS"
       tailwind.config = {
         theme: {
           extend: {
             fontFamily: {
-              sans: ['Inter', 'sans-serif'], // Usar Inter como fuente por defecto
+              sans: ['Inter', 'sans-serif'],
+            },
+            colors: {
+              background: '#0A0E27', // Ultra dark azulado
+              card: '#16182E', // Azul oscuro cálido
+              primary: '#FFB800', // Dorado (La Chispa / Acento)
+              secondary: '#6B5EFF', // Púrpura (para links)
+              maintext: '#F0F3FF', // Casi blanco azulado
+              muted: '#6D7492', // Muted gray/blue
+              danger: '#FF4D6D', // Rosa/Rojo para errores
             },
           },
         },
       };
     </script>
+
+    <style>
+      /* Animación para que la card "caiga" suave */
+      @keyframes fade-in-down {
+        0% {
+          opacity: 0;
+          transform: translateY(-20px) scale(0.95);
+        }
+        100% {
+          opacity: 1;
+          transform: translateY(0) scale(1);
+        }
+      }
+
+      /* Animación para las "chispas" de fondo */
+      @keyframes sparkle {
+        0%,
+        100% {
+          opacity: 0;
+          box-shadow: 0 0 10px 2px #ffb800; /* Color Accent (Dorado) */
+        }
+        50% {
+          opacity: 0.8;
+          box-shadow: 0 0 20px 5px #ffb800;
+        }
+      }
+
+      .animate-fade-in-down {
+        animation: fade-in-down 0.5s ease-out;
+      }
+
+      /* Clases para las chispas */
+      .spark {
+        position: absolute;
+        border-radius: 50%;
+        background-color: #ffb800;
+        width: 3px;
+        height: 3px;
+        animation: sparkle 10s ease-in-out infinite;
+      }
+    </style>
   </head>
-  <body>
-    <!-- Angular se renderiza aquí -->
+
+  <body class="bg-background text-maintext">
     <app-root></app-root>
   </body>
 </html>

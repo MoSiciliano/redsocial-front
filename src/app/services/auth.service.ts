@@ -11,7 +11,8 @@ import { User } from '../models/user';
   providedIn: 'root',
 })
 export class AuthService {
-  private apiUrl = 'https://morena-siciliano-redsocial-back.vercel.app';
+  //private apiUrl = 'https://morena-siciliano-redsocial-back.vercel.app';
+  apiUrl = 'http://localhost:3000'; // URL de tu backend
   private http = inject(HttpClient);
   private modalService = inject(ModalService);
   private router = inject(Router);
@@ -117,20 +118,20 @@ export class AuthService {
     console.error('Error en AuthService:', error);
 
     let title = defaultTitle;
-    let message = 'No se pudo conectar con el servidor. Intenta más tarde.';
+    let description = 'No se pudo conectar con el servidor. Intenta más tarde.';
 
     if (error.error && error.error.message) {
       if (Array.isArray(error.error.message)) {
-        message = error.error.message.join('<br>');
+        description = error.error.message.join('<br>');
       } else {
-        message = error.error.message;
+        description = error.error.message;
       }
     } else if (error.status === 0 || error.status === 503) {
-      message =
+      description =
         'Error de conexión. ¿El servidor backend (NestJS) está corriendo?';
     }
 
-    this.modalService.show(title, message);
-    return throwError(() => new Error(message));
+    this.modalService.show(title, description);
+    return throwError(() => new Error(description));
   }
 }

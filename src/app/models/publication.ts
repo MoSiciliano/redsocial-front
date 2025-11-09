@@ -1,11 +1,14 @@
+import { User } from './user';
+
 export interface Publication {
   _id: string;
   title: string;
- message: string;
+  description: string;
   imageUrl?: string;
-  //autor: Autor; // El backend nos lo da 'populado'
-  likes: string[]; // Por ahora, un array de IDs de usuarios
+  autor: User;
+  likes: string[]; 
+  comments: string[];
   isActive: boolean;
   createdAt: string;
-  updatedAt: string;  
+  updatedAt: string;
 }

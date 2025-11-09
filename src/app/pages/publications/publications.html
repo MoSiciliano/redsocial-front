@@ -1,1 +1,16 @@
-<p>publications works!</p>
+<app-navbar/>
+
+<main class="container mx-auto max-w-2xl px-4 py-8">
+  <app-create-post (postCreado)="onPostCreado($event)" />
+
+  <div class="mt-8">
+    <h2 class="mb-4 text-2xl font-semibold text-maintext">
+      Últimos Sparks
+    </h2>
+    
+    <div class="rounded-xl border border-muted/20 bg-card/60 p-6 text-center text-muted shadow-lg backdrop-blur-lg">
+      <p>Aún no hay publicaciones. ¡Sé el primero!</p>
+    </div>
+    
+  </div>
+</main>

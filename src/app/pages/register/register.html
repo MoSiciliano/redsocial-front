@@ -1,6 +1,4 @@
-<div
-  class="relative flex min-h-screen w-full items-center justify-center overflow-hidden bg-background p-4"
->
+<div class="relative flex min-h-screen w-full items-center justify-center overflow-hidden bg-background p-4">
   <div class="spark" style="top: 10%; left: 20%; animation-delay: -1s"></div>
   <div class="spark" style="top: 40%; left: 80%; animation-delay: -3s"></div>
   <div class="spark" style="top: 70%; left: 10%; animation-delay: -5s"></div>
@@ -9,82 +7,53 @@
   <div class="spark" style="top: 90%; left: 90%; animation-delay: -4s"></div>
 
   <div
-    class="relative z-10 w-full max-w-3xl rounded-2xl border border-muted/20 bg-card/60 p-8 shadow-2xl shadow-primary/10 backdrop-blur-lg animate-fade-in-down"
-  >
+    class="relative z-10 w-full max-w-3xl rounded-2xl border border-muted/20 bg-card/60 p-8 shadow-2xl shadow-primary/10 backdrop-blur-lg animate-fade-in-down">
     <h1 class="mb-4 text-center text-5xl font-extrabold text-primary">SparkIt</h1>
     <p class="mb-10 text-center text-muted">Empezá a compartir tus ideas con el mundo.</p>
 
-    <form
-      [formGroup]="registerForm"
-      (ngSubmit)="onSubmit()"
-      class="grid grid-cols-1 gap-x-6 md:grid-cols-2"
-    >
+    <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" class="grid grid-cols-1 gap-x-6 md:grid-cols-2">
       <div class="md:col-span-2 flex flex-col items-center gap-2 mb-6">
-        
         <div class="relative">
-          
-          <div
-            (click)="fileInput.click()"
+          <div (click)="fileInput.click()"
             class="h-32 w-32 overflow-hidden rounded-full border-2 border-primary/50 bg-card/50 flex items-center justify-center text-muted cursor-pointer transition-all hover:border-primary"
-            title="Seleccionar una imagen de perfil"
-          >
+            title="Seleccionar una imagen de perfil">
             @if(selectedFileUrl(); as previewUrl) {
-              <img [src]="previewUrl" 
-                   alt="Vista previa" 
-                   class="h-full w-full object-cover">
+            <img [src]="previewUrl" alt="Vista previa" class="h-full w-full object-cover" />
             } @else {
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="h-16 w-16 opacity-50">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A1.75 1.75 0 0 1 18 21.75H6a1.75 1.75 0 0 1-1.499-1.632Z" />
-              </svg>
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+              stroke="currentColor" class="h-16 w-16 opacity-50">
+              <path stroke-linecap="round" stroke-linejoin="round"
+                d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A1.75 1.75 0 0 1 18 21.75H6a1.75 1.75 0 0 1-1.499-1.632Z" />
+            </svg>
             }
           </div>
 
           @if (selectedFile()) {
-            <button 
-              type="button" 
-              (click)="clearFile(fileInput); $event.stopPropagation()"
-              title="Quitar imagen"
-              class="absolute top-0 right-0 flex h-8 w-8 items-center justify-center rounded-full border border-card bg-danger/80 text-white shadow-lg transition-all hover:scale-110 hover:bg-danger"
-            >
-              <span class="text-xl font-bold leading-none">&times;</span>
-            </button>
+          <button type="button" (click)="clearFile(fileInput); $event.stopPropagation()" title="Quitar imagen"
+            class="absolute top-0 right-0 flex h-8 w-8 items-center justify-center rounded-full border border-card bg-danger/80 text-white shadow-lg transition-all hover:scale-110 hover:bg-danger">
+            <span class="text-xl font-bold leading-none">&times;</span>
+          </button>
           }
         </div>
-        
-        <input
-          id="imageProfile"
-          type="file"
-          (change)="onFileSelected($event)"
-          accept="image/png, image/jpeg, image/webp"
-          class="hidden" #fileInput 
-        />
+
+        <input id="imageProfile" type="file" (change)="onFileSelected($event)"
+          accept="image/png, image/jpeg, image/webp" class="hidden" #fileInput />
 
         @if (!selectedFile()) {
-          <label 
-            for="imageProfile" 
-            class="cursor-pointer text-sm text-primary transition-all hover:text-purple-400"
-            (click)="fileInput.click()"
-          >
-            Subir una foto (Opcional)
-          </label>
+        <label for="imageProfile" class="cursor-pointer text-sm text-primary transition-all hover:text-purple-400"
+          (click)="fileInput.click()">
+          Subir una foto (Opcional)
+        </label>
         }
       </div>
       <div class="space-y-1 mb-4">
         <div
-          class="relative rounded-t-lg border-b-2 border-muted bg-card/50 transition duration-300 focus-within:border-primary"
-        >
-          <input
-            id="name"
-            formControlName="name"
-            type="text"
+          class="relative rounded-t-lg border-b-2 border-muted bg-card/50 transition duration-300 focus-within:border-primary">
+          <input id="name" formControlName="name" type="text"
             class="peer block w-full appearance-none bg-transparent px-3 py-3 text-maintext focus:outline-none focus:ring-0"
-            placeholder=" "
-          />
-          <label
-            for="name"
-            class="absolute top-4 left-3 z-10 origin-[0] -translate-y-6 scale-75 transform text-sm text-muted duration-300 peer-placeholder-shown:translate-y-0 peer-placeholder-shown:scale-100 peer-focus:-translate-y-6 peer-focus:scale-75 peer-focus:text-primary"
-            >Nombre</label
-          >
+            placeholder=" " />
+          <label for="name"
+            class="absolute top-4 left-3 z-10 origin-[0] -translate-y-6 scale-75 transform text-sm text-muted duration-300 peer-placeholder-shown:translate-y-0 peer-placeholder-shown:scale-100 peer-focus:-translate-y-6 peer-focus:scale-75 peer-focus:text-primary">Nombre</label>
         </div>
         @if (registerForm.get('name')?.invalid && registerForm.get('name')?.touched) {
         <p class="px-1 pt-1 text-xs text-danger">
@@ -96,20 +65,12 @@
 
       <div class="space-y-1 mb-4">
         <div
-          class="relative rounded-t-lg border-b-2 border-muted bg-card/50 transition duration-300 focus-within:border-primary"
-        >
-          <input
-            id="lastname"
-            formControlName="lastname"
-            type="text"
+          class="relative rounded-t-lg border-b-2 border-muted bg-card/50 transition duration-300 focus-within:border-primary">
+          <input id="lastname" formControlName="lastname" type="text"
             class="peer block w-full appearance-none bg-transparent px-3 py-3 text-maintext focus:outline-none focus:ring-0"
-            placeholder=" "
-          />
-          <label
-            for="lastname"
-            class="absolute top-4 left-3 z-10 origin-[0] -translate-y-6 scale-75 transform text-sm text-muted duration-300 peer-placeholder-shown:translate-y-0 peer-placeholder-shown:scale-100 peer-focus:-translate-y-6 peer-focus:scale-75 peer-focus:text-primary"
-            >Apellido</label
-          >
+            placeholder=" " />
+          <label for="lastname"
+            class="absolute top-4 left-3 z-10 origin-[0] -translate-y-6 scale-75 transform text-sm text-muted duration-300 peer-placeholder-shown:translate-y-0 peer-placeholder-shown:scale-100 peer-focus:-translate-y-6 peer-focus:scale-75 peer-focus:text-primary">Apellido</label>
         </div>
         @if (registerForm.get('lastname')?.invalid && registerForm.get('lastname')?.touched) {
         <p class="px-1 pt-1 text-xs text-danger">
@@ -121,20 +82,12 @@
 
       <div class="md:col-span-2 space-y-1 mb-4">
         <div
-          class="relative rounded-t-lg border-b-2 border-muted bg-card/50 transition duration-300 focus-within:border-primary"
-        >
-          <input
-            id="email"
-            formControlName="email"
-            type="email"
+          class="relative rounded-t-lg border-b-2 border-muted bg-card/50 transition duration-300 focus-within:border-primary">
+          <input id="email" formControlName="email" type="email"
             class="peer block w-full appearance-none bg-transparent px-3 py-3 text-maintext focus:outline-none focus:ring-0"
-            placeholder=" "
-          />
-          <label
-            for="email"
-            class="absolute top-4 left-3 z-10 origin-[0] -translate-y-6 scale-75 transform text-sm text-muted duration-300 peer-placeholder-shown:translate-y-0 peer-placeholder-shown:scale-100 peer-focus:-translate-y-6 peer-focus:scale-75 peer-focus:text-primary"
-            >Email</label
-          >
+            placeholder=" " />
+          <label for="email"
+            class="absolute top-4 left-3 z-10 origin-[0] -translate-y-6 scale-75 transform text-sm text-muted duration-300 peer-placeholder-shown:translate-y-0 peer-placeholder-shown:scale-100 peer-focus:-translate-y-6 peer-focus:scale-75 peer-focus:text-primary">Email</label>
         </div>
         @if (registerForm.get('email')?.invalid && registerForm.get('email')?.touched) {
         <p class="px-1 pt-1 text-xs text-danger">Email inválido.</p>
@@ -143,19 +96,13 @@
 
       <div class="space-y-1 mb-4">
         <div
-          class="relative rounded-t-lg border-b-2 border-muted bg-card/50 transition duration-300 focus-within:border-primary"
-        >
-          <input
-            id="username"
-            formControlName="username"
-            type="text"
+          class="relative rounded-t-lg border-b-2 border-muted bg-card/50 transition duration-300 focus-within:border-primary">
+          <input id="username" formControlName="username" type="text"
             class="peer block w-full appearance-none bg-transparent px-3 py-3 text-maintext focus:outline-none focus:ring-0"
-            placeholder=" "
-          />
-          <label
-            for="username"
-            class="absolute top-4 left-3 z-10 origin-[0] -translate-y-6 scale-75 transform text-sm text-muted duration-300 peer-placeholder-shown:translate-y-0 peer-placeholder-shown:scale-100 peer-focus:-translate-y-6 peer-focus:scale-75 peer-focus:text-primary"
-            >Nombre de Usuario
+            placeholder=" " />
+          <label for="username"
+            class="absolute top-4 left-3 z-10 origin-[0] -translate-y-6 scale-75 transform text-sm text-muted duration-300 peer-placeholder-shown:translate-y-0 peer-placeholder-shown:scale-100 peer-focus:-translate-y-6 peer-focus:scale-75 peer-focus:text-primary">Nombre
+            de Usuario
           </label>
         </div>
         @if (registerForm.get('username')?.invalid && registerForm.get('username')?.touched) {
@@ -170,20 +117,13 @@
 
       <div class="space-y-1 mb-4">
         <div
-          class="relative rounded-t-lg border-b-2 border-muted bg-card/50 transition duration-300 focus-within:border-primary"
-        >
-          <input
-            id="birthdate"
-            formControlName="birthdate"
-            type="date"
+          class="relative rounded-t-lg border-b-2 border-muted bg-card/50 transition duration-300 focus-within:border-primary">
+          <input id="birthdate" formControlName="birthdate" type="date"
             class="peer block w-full appearance-none bg-transparent px-3 py-3 text-maintext focus:outline-none focus:ring-0"
-            placeholder=" "
-          />
-          <label
-            for="birthdate"
-            class="absolute top-4 left-3 z-10 origin-[0] -translate-y-6 scale-75 transform text-sm text-muted duration-300 peer-focus:text-primary"
-            >Fecha de Nacimiento</label
-          >
+            placeholder=" " />
+          <label for="birthdate"
+            class="absolute top-4 left-3 z-10 origin-[0] -translate-y-6 scale-75 transform text-sm text-muted duration-300 peer-focus:text-primary">Fecha
+            de Nacimiento</label>
         </div>
         @if (registerForm.get('birthdate')?.invalid && registerForm.get('birthdate')?.touched) {
         <p class="px-1 pt-1 text-xs text-danger">
@@ -195,20 +135,12 @@
 
       <div class="space-y-1 mb-4">
         <div
-          class="relative rounded-t-lg border-b-2 border-muted bg-card/50 transition duration-300 focus-within:border-primary"
-        >
-          <input
-            id="password"
-            formControlName="password"
-            type="password"
+          class="relative rounded-t-lg border-b-2 border-muted bg-card/50 transition duration-300 focus-within:border-primary">
+          <input id="password" formControlName="password" type="password"
             class="peer block w-full appearance-none bg-transparent px-3 py-3 text-maintext focus:outline-none focus:ring-0"
-            placeholder=" "
-          />
-          <label
-            for="password"
-            class="absolute top-4 left-3 z-10 origin-[0] -translate-y-6 scale-75 transform text-sm text-muted duration-300 peer-placeholder-shown:translate-y-0 peer-placeholder-shown:scale-100 peer-focus:-translate-y-6 peer-focus:scale-75 peer-focus:text-primary"
-            >Contraseña</label
-          >
+            placeholder=" " />
+          <label for="password"
+            class="absolute top-4 left-3 z-10 origin-[0] -translate-y-6 scale-75 transform text-sm text-muted duration-300 peer-placeholder-shown:translate-y-0 peer-placeholder-shown:scale-100 peer-focus:-translate-y-6 peer-focus:scale-75 peer-focus:text-primary">Contraseña</label>
         </div>
         @if (registerForm.get('password')?.invalid && registerForm.get('password')?.touched) {
         <p class="px-1 pt-1 text-xs text-danger">8+ carac, 1 mayús, 1 núm.</p>
@@ -217,20 +149,13 @@
 
       <div class="space-y-1 mb-4">
         <div
-          class="relative rounded-t-lg border-b-2 border-muted bg-card/50 transition duration-300 focus-within:border-primary"
-        >
-          <input
-            id="confirmPassword"
-            formControlName="confirmPassword"
-            type="password"
+          class="relative rounded-t-lg border-b-2 border-muted bg-card/50 transition duration-300 focus-within:border-primary">
+          <input id="confirmPassword" formControlName="confirmPassword" type="password"
             class="peer block w-full appearance-none bg-transparent px-3 py-3 text-maintext focus:outline-none focus:ring-0"
-            placeholder=" "
-          />
-          <label
-            for="confirmPassword"
-            class="absolute top-4 left-3 z-10 origin-[0] -translate-y-6 scale-75 transform text-sm text-muted duration-300 peer-placeholder-shown:translate-y-0 peer-placeholder-shown:scale-100 peer-focus:-translate-y-6 peer-focus:scale-75 peer-focus:text-primary"
-            >Repetir Contraseña</label
-          >
+            placeholder=" " />
+          <label for="confirmPassword"
+            class="absolute top-4 left-3 z-10 origin-[0] -translate-y-6 scale-75 transform text-sm text-muted duration-300 peer-placeholder-shown:translate-y-0 peer-placeholder-shown:scale-100 peer-focus:-translate-y-6 peer-focus:scale-75 peer-focus:text-primary">Repetir
+            Contraseña</label>
         </div>
         @if (registerForm.errors?.['passwordMismatch'] &&
         registerForm.get('confirmPassword')?.touched) {
@@ -240,33 +165,21 @@
 
       <div class="md:col-span-2 space-y-1 mb-4">
         <div
-          class="relative rounded-t-lg border-b-2 border-muted bg-card/50 transition duration-300 focus-within:border-primary"
-        >
-          <textarea
-            id="description"
-            formControlName="description"
-            rows="3"
+          class="relative rounded-t-lg border-b-2 border-muted bg-card/50 transition duration-300 focus-within:border-primary">
+          <textarea id="description" formControlName="description" rows="3"
             class="peer block w-full appearance-none bg-transparent px-3 py-3 text-maintext focus:outline-none focus:ring-0"
-            placeholder=" "
-          ></textarea>
-          <label
-            for="description"
-            class="absolute top-4 left-3 z-10 origin-[0] -translate-y-6 scale-75 transform text-sm text-muted duration-300 peer-placeholder-shown:translate-y-0 peer-placeholder-shown:scale-100 peer-focus:-translate-y-6 peer-focus:scale-75 peer-focus:text-primary"
-            >Descripción (Opcional)</label
-          >
+            placeholder=" "></textarea>
+          <label for="description"
+            class="absolute top-4 left-3 z-10 origin-[0] -translate-y-6 scale-75 transform text-sm text-muted duration-300 peer-placeholder-shown:translate-y-0 peer-placeholder-shown:scale-100 peer-focus:-translate-y-6 peer-focus:scale-75 peer-focus:text-primary">Descripción
+            (Opcional)</label>
         </div>
       </div>
 
       <div class="md:col-span-2 pt-4">
-        <button
-          type="submit"
-          [disabled]="registerForm.invalid || authService.isLoading()"
-          class="w-full transform rounded-lg bg-primary px-4 py-3 font-bold text-background shadow-md transition-all duration-300 ease-in-out hover:-translate-y-0.5 hover:scale-[1.02] hover:shadow-lg hover:shadow-primary/30 focus:outline-none focus:ring-4 focus:ring-primary/30 disabled:translate-y-0 disabled:scale-100 disabled:opacity-50 disabled:cursor-not-allowed"
-        >
+        <button type="submit" [disabled]="registerForm.invalid || authService.isLoading()"
+          class="w-full transform rounded-lg bg-primary px-4 py-3 font-bold text-background shadow-md transition-all duration-300 ease-in-out hover:-translate-y-0.5 hover:scale-[1.02] hover:shadow-lg hover:shadow-primary/30 focus:outline-none focus:ring-4 focus:ring-primary/30 disabled:translate-y-0 disabled:scale-100 disabled:opacity-50 disabled:cursor-not-allowed">
           @if (authService.isLoading()) {
-          <div
-            class="mx-auto h-5 w-5 animate-spin rounded-full border-2 border-background border-t-transparent"
-          ></div>
+          <div class="mx-auto h-5 w-5 animate-spin rounded-full border-2 border-background border-t-transparent"></div>
           } @else { Crear Cuenta }
         </button>
       </div>
@@ -274,10 +187,7 @@
 
     <p class="mt-8 text-center text-sm text-muted">
       ¿Ya tenés cuenta?
-      <a
-        routerLink="/login"
-        class="font-medium text-secondary transition-colors hover:text-purple-400"
-      >
+      <a routerLink="/login" class="font-medium text-secondary transition-colors hover:text-purple-400">
         Iniciá sesión
       </a>
     </p>

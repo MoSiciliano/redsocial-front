@@ -17,9 +17,59 @@
     <form
       [formGroup]="registerForm"
       (ngSubmit)="onSubmit()"
-      class="grid grid-cols-1 gap-x-6 gap-y-8 md:grid-cols-2"
+      class="grid grid-cols-1 gap-x-6 md:grid-cols-2"
     >
-      <div class="space-y-1">
+      <div class="md:col-span-2 flex flex-col items-center gap-2 mb-6">
+        
+        <div class="relative">
+          
+          <div
+            (click)="fileInput.click()"
+            class="h-32 w-32 overflow-hidden rounded-full border-2 border-primary/50 bg-card/50 flex items-center justify-center text-muted cursor-pointer transition-all hover:border-primary"
+            title="Seleccionar una imagen de perfil"
+          >
+            @if(selectedFileUrl(); as previewUrl) {
+              <img [src]="previewUrl" 
+                   alt="Vista previa" 
+                   class="h-full w-full object-cover">
+            } @else {
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="h-16 w-16 opacity-50">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A1.75 1.75 0 0 1 18 21.75H6a1.75 1.75 0 0 1-1.499-1.632Z" />
+              </svg>
+            }
+          </div>
+
+          @if (selectedFile()) {
+            <button 
+              type="button" 
+              (click)="clearFile(fileInput); $event.stopPropagation()"
+              title="Quitar imagen"
+              class="absolute top-0 right-0 flex h-8 w-8 items-center justify-center rounded-full border border-card bg-danger/80 text-white shadow-lg transition-all hover:scale-110 hover:bg-danger"
+            >
+              <span class="text-xl font-bold leading-none">&times;</span>
+            </button>
+          }
+        </div>
+        
+        <input
+          id="imageProfile"
+          type="file"
+          (change)="onFileSelected($event)"
+          accept="image/png, image/jpeg, image/webp"
+          class="hidden" #fileInput 
+        />
+
+        @if (!selectedFile()) {
+          <label 
+            for="imageProfile" 
+            class="cursor-pointer text-sm text-primary transition-all hover:text-purple-400"
+            (click)="fileInput.click()"
+          >
+            Subir una foto (Opcional)
+          </label>
+        }
+      </div>
+      <div class="space-y-1 mb-4">
         <div
           class="relative rounded-t-lg border-b-2 border-muted bg-card/50 transition duration-300 focus-within:border-primary"
         >
@@ -44,7 +94,7 @@
         }
       </div>
 
-      <div class="space-y-1">
+      <div class="space-y-1 mb-4">
         <div
           class="relative rounded-t-lg border-b-2 border-muted bg-card/50 transition duration-300 focus-within:border-primary"
         >
@@ -69,7 +119,7 @@
         }
       </div>
 
-      <div class="md:col-span-2 space-y-1">
+      <div class="md:col-span-2 space-y-1 mb-4">
         <div
           class="relative rounded-t-lg border-b-2 border-muted bg-card/50 transition duration-300 focus-within:border-primary"
         >
@@ -91,7 +141,7 @@
         }
       </div>
 
-      <div class="space-y-1">
+      <div class="space-y-1 mb-4">
         <div
           class="relative rounded-t-lg border-b-2 border-muted bg-card/50 transition duration-300 focus-within:border-primary"
         >
@@ -118,7 +168,7 @@
         }
       </div>
 
-      <div class="space-y-1">
+      <div class="space-y-1 mb-4">
         <div
           class="relative rounded-t-lg border-b-2 border-muted bg-card/50 transition duration-300 focus-within:border-primary"
         >
@@ -143,7 +193,7 @@
         }
       </div>
 
-      <div class="space-y-1">
+      <div class="space-y-1 mb-4">
         <div
           class="relative rounded-t-lg border-b-2 border-muted bg-card/50 transition duration-300 focus-within:border-primary"
         >
@@ -165,7 +215,7 @@
         }
       </div>
 
-      <div class="space-y-1">
+      <div class="space-y-1 mb-4">
         <div
           class="relative rounded-t-lg border-b-2 border-muted bg-card/50 transition duration-300 focus-within:border-primary"
         >
@@ -188,7 +238,7 @@
         }
       </div>
 
-      <div class="md:col-span-2 space-y-1">
+      <div class="md:col-span-2 space-y-1 mb-4">
         <div
           class="relative rounded-t-lg border-b-2 border-muted bg-card/50 transition duration-300 focus-within:border-primary"
         >
@@ -205,22 +255,6 @@
             >Descripción (Opcional)</label
           >
         </div>
-      </div>
-
-      <div class="md:col-span-2">
-        <label for="imageProfile" class="mb-2 block text-sm text-muted"
-          >Imagen de Perfil (Opcional)</label
-        >
-        <input
-          id="imageProfile"
-          type="file"
-          (change)="onFileSelected($event)"
-          accept="image/png, image/jpeg, image/webp"
-          class="block w-full text-sm text-muted file:mr-4 file:rounded-lg file:border-0 file:bg-primary/20 file:py-2 file:px-4 file:text-sm file:font-semibold file:text-primary hover:file:bg-primary/30 file:cursor-pointer"
-        />
-        @if (selectedFile(); as file) {
-        <p class="mt-2 text-xs text-green-400">OK: {{ file.name }}</p>
-        }
       </div>
 
       <div class="md:col-span-2 pt-4">

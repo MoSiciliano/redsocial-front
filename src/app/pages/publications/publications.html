@@ -1,59 +1,57 @@
 <app-navbar />
 
-<main class="container mx-auto max-w-2xl px-4 py-8">
-  <app-create-post (postCreado)="onPostCreado($event)" />
+<main class="min-h-screen pl-64">
+  
+  <div class="container mx-auto max-w-2xl px-4 py-8">
+    
+    <app-create-post (postCreado)="onPostCreado($event)" />
 
-  <div class="mt-8">
-    <h2 class="mb-4 text-2xl font-semibold text-maintext">Últimos Sparks</h2>
+    <div class="mt-8">
+      <h2 class="mb-4 text-2xl font-semibold text-maintext">Últimos Sparks</h2>
 
-    @if (isLoading()) {
-    <div
-      class="rounded-xl border border-muted/20 bg-card/60 p-6 text-center text-muted shadow-lg backdrop-blur-lg"
-    >
-      <p>Cargando publicaciones...</p>
-    </div>
-    }
-
-    @if (!isLoading() && posts().length === 0) {
-    <div
-      class="rounded-xl border border-muted/20 bg-card/60 p-6 text-center text-muted shadow-lg backdrop-blur-lg"
-    >
-      <p>¡Aún no hay publicaciones! Sé el primero en crear un Spark.</p>
-    </div>
-    }
-
-    @if (!isLoading() && posts().length > 0) {
-    <div class="space-y-6">
-      
-      @for (post of posts(); track post._id) {
+      @if (isLoading()) {
       <div
-        class="rounded-xl border border-muted/20 bg-card/60 p-6 shadow-lg backdrop-blur-lg"
+        class="rounded-xl border border-muted/20 bg-card/60 p-6 text-center text-muted shadow-lg backdrop-blur-lg"
       >
-        <div class="flex items-center gap-3">
+        <p>Cargando publicaciones...</p>
+      </div>
+      } @if (!isLoading() && posts().length === 0) {
+      <div
+        class="rounded-xl border border-muted/20 bg-card/60 p-6 text-center text-muted shadow-lg backdrop-blur-lg"
+      >
+        <p>¡Aún no hay publicaciones! Sé el primero en crear un Spark.</p>
+      </div>
+      } @if (!isLoading() && posts().length > 0) {
+      <div class="space-y-6">
+        @for (post of posts(); track post._id) {
+        <div
+          class="rounded-xl border border-muted/20 bg-card/60 p-6 shadow-lg backdrop-blur-lg"
+        >
+          <div class="flex items-center gap-3">
+            <img
+              [src]="post.autor.imageProfile"
+              alt="Avatar de {{ post.autor.username }}"
+              class="h-10 w-10 rounded-full object-cover"
+            />
+            <span class="font-semibold text-maintext">{{
+              post.autor.username
+            }}</span>
+          </div>
+
+          <h3 class="mt-4 text-xl font-bold text-primary">{{ post.title }}</h3>
+          <p class="mt-2 text-maintext/90">{{ post.message }}</p>
+
+          @if (post.imageUrl) {
           <img
-            [src]="post.autor.imageProfile"
-            alt="Avatar de {{ post.autor.username }}"
-            class="h-10 w-10 rounded-full object-cover"
+            [src]="post.imageUrl"
+            alt="Imagen del post"
+            class="mt-4 w-full rounded-lg object-cover"
           />
-          <span class="font-semibold text-maintext">{{
-            post.autor.username
-          }}</span>
+          }
         </div>
-
-        <h3 class="mt-4 text-xl font-bold text-primary">{{ post.title }}</h3>
-        <p class="mt-2 text-maintext/90">{{ post.description }}</p>
-
-        @if (post.imageUrl) {
-        <img
-          [src]="post.imageUrl"
-          alt="Imagen del post"
-          class="mt-4 w-full rounded-lg object-cover"
-        />
         }
-
-        </div>
+      </div>
       }
     </div>
-    }
-  </div>
+    </div>
 </main>

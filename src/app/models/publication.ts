@@ -3,7 +3,7 @@ import { User } from './user';
 export interface Publication {
   _id: string;
   title: string;
-  description: string;
+  message: string;
   imageUrl?: string;
   autor: User;
   likes: string[]; 

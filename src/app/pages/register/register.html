@@ -35,10 +35,8 @@
           </button>
           }
         </div>
-
         <input id="imageProfile" type="file" (change)="onFileSelected($event)"
           accept="image/png, image/jpeg, image/webp" class="hidden" #fileInput />
-
         @if (!selectedFile()) {
         <label for="imageProfile" class="cursor-pointer text-sm text-primary transition-all hover:text-purple-400"
           (click)="fileInput.click()">
@@ -46,6 +44,7 @@
         </label>
         }
       </div>
+
       <div class="space-y-1 mb-4">
         <div
           class="relative rounded-t-lg border-b-2 border-muted bg-card/50 transition duration-300 focus-within:border-primary">
@@ -53,7 +52,12 @@
             class="peer block w-full appearance-none bg-transparent px-3 py-3 text-maintext focus:outline-none focus:ring-0"
             placeholder=" " />
           <label for="name"
-            class="absolute top-4 left-3 z-10 origin-[0] -translate-y-6 scale-75 transform text-sm text-muted duration-300 peer-placeholder-shown:translate-y-0 peer-placeholder-shown:scale-100 peer-focus:-translate-y-6 peer-focus:scale-75 peer-focus:text-primary">Nombre</label>
+            class="absolute top-4 left-3 z-10 origin-[0] -translate-y-6 scale-75 transform text-sm text-muted duration-300 
+                   px-1 bg-card/50 
+                   peer-placeholder-shown:px-0 peer-placeholder-shown:bg-transparent
+                   peer-focus:px-1 peer-focus:bg-card/50
+                   peer-placeholder-shown:translate-y-0 peer-placeholder-shown:scale-100 
+                   peer-focus:-translate-y-6 peer-focus:scale-75 peer-focus:text-primary">Nombre</label>
         </div>
         @if (registerForm.get('name')?.invalid && registerForm.get('name')?.touched) {
         <p class="px-1 pt-1 text-xs text-danger">
@@ -70,7 +74,12 @@
             class="peer block w-full appearance-none bg-transparent px-3 py-3 text-maintext focus:outline-none focus:ring-0"
             placeholder=" " />
           <label for="lastname"
-            class="absolute top-4 left-3 z-10 origin-[0] -translate-y-6 scale-75 transform text-sm text-muted duration-300 peer-placeholder-shown:translate-y-0 peer-placeholder-shown:scale-100 peer-focus:-translate-y-6 peer-focus:scale-75 peer-focus:text-primary">Apellido</label>
+            class="absolute top-4 left-3 z-10 origin-[0] -translate-y-6 scale-75 transform text-sm text-muted duration-300
+                   px-1 bg-card/50 
+                   peer-placeholder-shown:px-0 peer-placeholder-shown:bg-transparent
+                   peer-focus:px-1 peer-focus:bg-card/50
+                   peer-placeholder-shown:translate-y-0 peer-placeholder-shown:scale-100 
+                   peer-focus:-translate-y-6 peer-focus:scale-75 peer-focus:text-primary">Apellido</label>
         </div>
         @if (registerForm.get('lastname')?.invalid && registerForm.get('lastname')?.touched) {
         <p class="px-1 pt-1 text-xs text-danger">
@@ -87,7 +96,12 @@
             class="peer block w-full appearance-none bg-transparent px-3 py-3 text-maintext focus:outline-none focus:ring-0"
             placeholder=" " />
           <label for="email"
-            class="absolute top-4 left-3 z-10 origin-[0] -translate-y-6 scale-75 transform text-sm text-muted duration-300 peer-placeholder-shown:translate-y-0 peer-placeholder-shown:scale-100 peer-focus:-translate-y-6 peer-focus:scale-75 peer-focus:text-primary">Email</label>
+            class="absolute top-4 left-3 z-10 origin-[0] -translate-y-6 scale-75 transform text-sm text-muted duration-300
+                   px-1 bg-card/50 
+                   peer-placeholder-shown:px-0 peer-placeholder-shown:bg-transparent
+                   peer-focus:px-1 peer-focus:bg-card/50
+                   peer-placeholder-shown:translate-y-0 peer-placeholder-shown:scale-100 
+                   peer-focus:-translate-y-6 peer-focus:scale-75 peer-focus:text-primary">Email</label>
         </div>
         @if (registerForm.get('email')?.invalid && registerForm.get('email')?.touched) {
         <p class="px-1 pt-1 text-xs text-danger">Email inválido.</p>
@@ -101,7 +115,12 @@
             class="peer block w-full appearance-none bg-transparent px-3 py-3 text-maintext focus:outline-none focus:ring-0"
             placeholder=" " />
           <label for="username"
-            class="absolute top-4 left-3 z-10 origin-[0] -translate-y-6 scale-75 transform text-sm text-muted duration-300 peer-placeholder-shown:translate-y-0 peer-placeholder-shown:scale-100 peer-focus:-translate-y-6 peer-focus:scale-75 peer-focus:text-primary">Nombre
+            class="absolute top-4 left-3 z-10 origin-[0] -translate-y-6 scale-75 transform text-sm text-muted duration-300
+                   px-1 bg-card/50 
+                   peer-placeholder-shown:px-0 peer-placeholder-shown:bg-transparent
+                   peer-focus:px-1 peer-focus:bg-card/50
+                   peer-placeholder-shown:translate-y-0 peer-placeholder-shown:scale-100 
+                   peer-focus:-translate-y-6 peer-focus:scale-75 peer-focus:text-primary">Nombre
             de Usuario
           </label>
         </div>
@@ -122,7 +141,9 @@
             class="peer block w-full appearance-none bg-transparent px-3 py-3 text-maintext focus:outline-none focus:ring-0"
             placeholder=" " />
           <label for="birthdate"
-            class="absolute top-4 left-3 z-10 origin-[0] -translate-y-6 scale-75 transform text-sm text-muted duration-300 peer-focus:text-primary">Fecha
+            class="absolute top-4 left-3 z-10 origin-[0] -translate-y-6 scale-75 transform text-sm text-muted duration-300 
+                   px-1 bg-card/50 
+                   peer-focus:text-primary">Fecha
             de Nacimiento</label>
         </div>
         @if (registerForm.get('birthdate')?.invalid && registerForm.get('birthdate')?.touched) {
@@ -140,7 +161,12 @@
             class="peer block w-full appearance-none bg-transparent px-3 py-3 text-maintext focus:outline-none focus:ring-0"
             placeholder=" " />
           <label for="password"
-            class="absolute top-4 left-3 z-10 origin-[0] -translate-y-6 scale-75 transform text-sm text-muted duration-300 peer-placeholder-shown:translate-y-0 peer-placeholder-shown:scale-100 peer-focus:-translate-y-6 peer-focus:scale-75 peer-focus:text-primary">Contraseña</label>
+            class="absolute top-4 left-3 z-10 origin-[0] -translate-y-6 scale-75 transform text-sm text-muted duration-300
+                   px-1 bg-card/50 
+                   peer-placeholder-shown:px-0 peer-placeholder-shown:bg-transparent
+                   peer-focus:px-1 peer-focus:bg-card/50
+                   peer-placeholder-shown:translate-y-0 peer-placeholder-shown:scale-100 
+                   peer-focus:-translate-y-6 peer-focus:scale-75 peer-focus:text-primary">Contraseña</label>
         </div>
         @if (registerForm.get('password')?.invalid && registerForm.get('password')?.touched) {
         <p class="px-1 pt-1 text-xs text-danger">8+ carac, 1 mayús, 1 núm.</p>
@@ -154,7 +180,12 @@
             class="peer block w-full appearance-none bg-transparent px-3 py-3 text-maintext focus:outline-none focus:ring-0"
             placeholder=" " />
           <label for="confirmPassword"
-            class="absolute top-4 left-3 z-10 origin-[0] -translate-y-6 scale-75 transform text-sm text-muted duration-300 peer-placeholder-shown:translate-y-0 peer-placeholder-shown:scale-100 peer-focus:-translate-y-6 peer-focus:scale-75 peer-focus:text-primary">Repetir
+            class="absolute top-4 left-3 z-10 origin-[0] -translate-y-6 scale-75 transform text-sm text-muted duration-300
+                   px-1 bg-card/50 
+                   peer-placeholder-shown:px-0 peer-placeholder-shown:bg-transparent
+                   peer-focus:px-1 peer-focus:bg-card/50
+                   peer-placeholder-shown:translate-y-0 peer-placeholder-shown:scale-100 
+                   peer-focus:-translate-y-6 peer-focus:scale-75 peer-focus:text-primary">Repetir
             Contraseña</label>
         </div>
         @if (registerForm.errors?.['passwordMismatch'] &&
@@ -170,7 +201,12 @@
             class="peer block w-full appearance-none bg-transparent px-3 py-3 text-maintext focus:outline-none focus:ring-0"
             placeholder=" "></textarea>
           <label for="description"
-            class="absolute top-4 left-3 z-10 origin-[0] -translate-y-6 scale-75 transform text-sm text-muted duration-300 peer-placeholder-shown:translate-y-0 peer-placeholder-shown:scale-100 peer-focus:-translate-y-6 peer-focus:scale-75 peer-focus:text-primary">Descripción
+            class="absolute top-4 left-3 z-10 origin-[0] -translate-y-6 scale-75 transform text-sm text-muted duration-300
+                   px-1 bg-card/50 
+                   peer-placeholder-shown:px-0 peer-placeholder-shown:bg-transparent
+                   peer-focus:px-1 peer-focus:bg-card/50
+                   peer-placeholder-shown:translate-y-0 peer-placeholder-shown:scale-100 
+                   peer-focus:-translate-y-6 peer-focus:scale-75 peer-focus:text-primary">Descripción
             (Opcional)</label>
         </div>
       </div>

@@ -22,7 +22,7 @@ export class PublicationsService {
   // Usamos la misma URL base que tu AuthService
   private apiUrl = 'http://localhost:3000';
 
-  createPublication(publication: FormData) {
+  createPublication(publication: FormData): Observable<Publication> {
     return this.http
       .post<Publication>(`${this.apiUrl}/publications`, publication, {
         withCredentials: true,
@@ -52,18 +52,36 @@ export class PublicationsService {
       limit: limit.toString(),
       sortBy: sortBy,
     });
-    return this.http.get<PaginatedPublications>(
-      `${this.apiUrl}/publications?${params.toString()}`,
-      { withCredentials: true }
-    ).pipe(
-      catchError((err) => {
-        console.error('Error al obtener las publicaciones:', err);
-        this.modalService.show(
-          'Error al cargar publicaciones',
-          'No se pudieron cargar las publicaciones. Por favor, intenta nuevamente más tarde.'
-        );
-        return throwError(() => err);
+
+    return this.http
+      .get<PaginatedPublications>(`${this.apiUrl}/publications?${params.toString()}`, {
+        withCredentials: true,
       })
-    );
+      .pipe(
+        catchError((err) => {
+          console.error('Error al obtener las publicaciones:', err);
+          this.modalService.show(
+            'Error al cargar publicaciones',
+            'No se pudieron cargar las publicaciones. Por favor, intenta nuevamente más tarde.'
+          );
+          return throwError(() => err);
+        })
+      );
+  }
+  addLike(postId: string): Observable<Publication> {
+    return this.http
+      .post<Publication>(`${this.apiUrl}/publications/${postId}/like`, { withCredentials: true })
+      .pipe(catchError((err) => this.handleLikeError(err)));
+  }
+  removeLike(postId: string): Observable<Publication> {
+    return this.http
+      .delete<Publication>(`${this.apiUrl}/publications/${postId}/like`, { withCredentials: true })
+      .pipe(catchError((err) => this.handleLikeError(err)));
+  }
+
+  private handleLikeError(err: any): Observable<never> {
+    console.error('Error en la operación de Like:', err);
+    // No mostramos modal para que sea más rápido, pero sí logueamos
+    return throwError(() => err);
   }
 }

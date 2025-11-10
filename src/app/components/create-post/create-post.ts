@@ -39,7 +39,7 @@ export class CreatePost {
   isLoading = signal(false);
 
   // Evento para avisar cuando se crea un post
-  @Output() postCreado = new EventEmitter<Publication>();
+  @Output() postCreated = new EventEmitter<Publication>();
 
   // Formulario
   postForm = this.fb.group({
@@ -90,7 +90,7 @@ export class CreatePost {
         this.isLoading.set(false);
         // 3. Limpiar formulario y avisar al padre
         this.resetForm();
-        this.postCreado.emit(newPublication);
+        this.postCreated.emit(newPublication);
         this.modalService.show(
             'Publicación creada', 'Tu publicación fue creada con éxito.'
         );

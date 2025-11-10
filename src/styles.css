@@ -1,1 +1,22 @@
-/* You can add global styles to this file, and also import other style files */
+/* HACK PARA FORZAR EL AUTORRELLENO (AUTOCOMPLETE) DEL NAVEGADOR A MODO OSCURO
+*/
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active {
+
+  /* 👇 ESTA LÍNEA PONE LAS LETRAS BLANCAS (maintext) 👇 */
+  -webkit-text-fill-color: rgb(var(--color-maintext)) !important;
+
+  /* 👇 ESTA LÍNEA PONE EL FONDO OSCURO (card/50) 👇 */
+  box-shadow: 0 0 0px 1000px rgb(23 23 27 / 0.5) inset !important;
+  
+  /* ... (El resto de las líneas) ... */
+  font-size: 1rem;
+  transition: background-color 5000s ease-in-out 0s;
+}
+
+/* Opcional: Para el input de fecha en modo oscuro */
+input[type='date']::-webkit-calendar-picker-indicator {
+  filter: invert(1);
+}

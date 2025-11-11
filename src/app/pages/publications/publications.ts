@@ -1,9 +1,9 @@
 import { Component, ChangeDetectionStrategy, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { NavbarComponent } from '../../components/nav/nav';
-import { Publication } from '../../models/publication';
+import { Publication, ReactionType } from '../../models/publication';
 import { CreatePost } from '../../components/create-post/create-post';
-import { PublicationsService } from '../../services/publications.service';
+import { PublicationsService, SortByType } from '../../services/publications.service';
 import { AuthService } from '../../services/auth.service';
 
 @Component({
@@ -20,12 +20,16 @@ export class Publications implements OnInit {
   isLoading = signal(true);
   posts = signal<Publication[]>([]);
 
+  currentSort = signal<SortByType>('new');
+  sortOptions: SortByType[] = ['new', 'rockets', 'hearts', 'doubts'];
+
   ngOnInit(): void {
     this.loadPosts();
   }
+
   loadPosts() {
     this.isLoading.set(true);
-    this.pubService.getPublications().subscribe({
+    this.pubService.getPublications(1,10, this.currentSort()).subscribe({
       next: (res) => {
         this.posts.set(res.docs);
         this.isLoading.set(false);
@@ -35,41 +39,55 @@ export class Publications implements OnInit {
       },
     });
   }
+
+  changeSort(newSort: SortByType) {
+    if (this.currentSort() === newSort) return; 
+    this.currentSort.set(newSort);
+    this.loadPosts();
+  }
+
   onPostCreated(newPost: Publication) {
-    console.log('¡Nuevo post creado!:', newPost);
-    this.posts.update((currentPosts) => [newPost, ...currentPosts]);
+    if (this.currentSort() === 'new') {
+      this.posts.update((listaActual) => [newPost, ...listaActual]);
+    }
+    this.loadPosts();
   }
-  isPostLikedByUser(post: Publication): boolean {
+
+  getUserReaction(post: Publication): ReactionType | null {
     const currentUserId = this.authService.currentUser()?._id;
-    if (!currentUserId) return false;
-    return post.likes.includes(currentUserId);
+    if (!currentUserId) return null;
+
+    if (post.hearts.includes(currentUserId)) return 'heart';
+    if (post.rockets.includes(currentUserId)) return 'rocket';
+    if (post.doubts.includes(currentUserId)) return 'doubt';
+
+    return null;
   }
-  onLikeToggle(post: Publication) {
-    const currentUserId = this.authService.currentUser()?._id;
-    if (!currentUserId) {
-      console.error('Usuario no logueado, no puede dar like.');
-      return;
+  onReact(post: Publication, reaction: ReactionType) {
+    const currentReaction = this.getUserReaction(post);
+    
+    let reactionToSend: ReactionType | 'remove';
+
+    if (currentReaction === reaction) {
+      // Si el usuario hace clic en la misma reacción, la quitamos
+      reactionToSend = 'remove';
+    } else {
+      // Si hace clic en una nueva, la enviamos
+      reactionToSend = reaction;
     }
 
-    const isLiked = this.isPostLikedByUser(post);
-
-    // Creamos el observable (ya sea para dar o quitar like)
-    const request$ = isLiked
-      ? this.pubService.removeLike(post._id)
-      : this.pubService.addLike(post._id);
-
-    // Nos suscribimos
-    request$.subscribe({
+    // Llamamos al nuevo servicio
+    this.pubService.reactToPost(post._id, reactionToSend).subscribe({
       next: (updatedPost) => {
-        // Cuando el back responde, actualizamos solo ese post en la señal
+        // Actualizamos el post en la lista con la data nueva
         this.updatePostInList(updatedPost);
       },
       error: (err) => {
-        console.error('Error al actualizar like', err);
-        // (Opcional: podríamos revertir el like visualmente si falla)
+        console.error('Error al reaccionar', err);
       },
     });
   }
+
   private updatePostInList(updatedPost: Publication) {
     this.posts.update((currentPosts) => {
       // Buscamos el índice del post a actualizar

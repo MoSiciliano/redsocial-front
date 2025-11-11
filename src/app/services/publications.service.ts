@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { catchError, Observable, throwError } from 'rxjs';
 import { ModalService } from './modal.service';
-import { Publication } from '../models/publication';
+import { Publication, ReactionType } from '../models/publication';
 
 export interface PaginatedPublications {
   docs: Publication[];
@@ -11,6 +11,7 @@ export interface PaginatedPublications {
   limit: number;
   totalPages: number;
 }
+export type SortByType = 'new' | 'rockets' | 'hearts' | 'doubts';
 
 @Injectable({
   providedIn: 'root',
@@ -19,7 +20,6 @@ export class PublicationsService {
   private http = inject(HttpClient);
   private modalService = inject(ModalService);
 
-  // Usamos la misma URL base que tu AuthService
   private apiUrl = 'http://localhost:3000';
 
   createPublication(publication: FormData): Observable<Publication> {
@@ -45,7 +45,7 @@ export class PublicationsService {
   getPublications(
     page: number = 1,
     limit: number = 10,
-    sortBy: 'new' | 'likes' = 'new'
+    sortBy: SortByType = 'new'
   ): Observable<PaginatedPublications> {
     const params = new URLSearchParams({
       page: page.toString(),
@@ -68,20 +68,37 @@ export class PublicationsService {
         })
       );
   }
-  addLike(postId: string): Observable<Publication> {
-    return this.http
-      .post<Publication>(`${this.apiUrl}/publications/${postId}/like`, { withCredentials: true })
-      .pipe(catchError((err) => this.handleLikeError(err)));
-  }
-  removeLike(postId: string): Observable<Publication> {
-    return this.http
-      .delete<Publication>(`${this.apiUrl}/publications/${postId}/like`, { withCredentials: true })
-      .pipe(catchError((err) => this.handleLikeError(err)));
-  }
+  reactToPost(
+    postId: string,
+    reaction: ReactionType | 'remove', // 'heart', 'rocket', 'doubt' o 'remove'
+  ): Observable<Publication> {
+    // El DTO del backend espera un body: { reaction: '...' }
+    const body = { reaction: reaction };
 
-  private handleLikeError(err: any): Observable<never> {
-    console.error('Error en la operación de Like:', err);
-    // No mostramos modal para que sea más rápido, pero sí logueamos
+    return this.http
+      .post<Publication>(`${this.apiUrl}/publications/${postId}/react`, body, {
+        withCredentials: true,
+      })
+      .pipe(catchError((err) => this.handleReactionError(err)));
+  }
+  private handleReactionError(err: any): Observable<never> {
+    console.error('Error en la operación de Reacción:', err);
+    // No mostramos modal para que sea más rápido
     return throwError(() => err);
   }
+  // addLike(postId: string): Observable<Publication> {
+  //   return this.http
+  //     .post<Publication>(`${this.apiUrl}/publications/${postId}/like`, { withCredentials: true })
+  //     .pipe(catchError((err) => this.handleLikeError(err)));
+  // }
+  // removeLike(postId: string): Observable<Publication> {
+  //   return this.http
+  //     .delete<Publication>(`${this.apiUrl}/publications/${postId}/like`, { withCredentials: true })
+  //     .pipe(catchError((err) => this.handleLikeError(err)));
+  // }
+  // private handleLikeError(err: any): Observable<never> {
+  //   console.error('Error en la operación de Like:', err);
+  //   // No mostramos modal para que sea más rápido, pero sí logueamos
+  //   return throwError(() => err);
+  // }
 }

@@ -3,6 +3,7 @@ import { Injectable, inject } from '@angular/core';
 import { catchError, Observable, throwError } from 'rxjs';
 import { ModalService } from './modal.service';
 import { Publication, ReactionType } from '../models/publication';
+import { environment } from '../../enviroments/enviroment.prod';
 
 export interface PaginatedPublications {
   docs: Publication[];
@@ -20,8 +21,7 @@ export class PublicationsService {
   private http = inject(HttpClient);
   private modalService = inject(ModalService);
 
-  private apiUrl = 'http://localhost:3000';
-
+  private apiUrl = environment.apiUrl;
   createPublication(publication: FormData): Observable<Publication> {
     return this.http
       .post<Publication>(`${this.apiUrl}/publications`, publication, {

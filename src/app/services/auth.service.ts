@@ -6,13 +6,14 @@ import { ModalService } from './modal.service';
 import { Router } from '@angular/router';
 import { Credentials } from '../models/credentials';
 import { User } from '../models/user';
+import { environment } from '../../enviroments/enviroment.prod';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AuthService {
   //private apiUrl = 'https://morena-siciliano-redsocial-back.vercel.app';
-  apiUrl = 'http://localhost:3000'; // URL de tu backend
+  apiUrl = environment.apiUrl;
   private http = inject(HttpClient);
   private modalService = inject(ModalService);
   private router = inject(Router);
@@ -69,51 +70,49 @@ export class AuthService {
     this.isLoading.set(true); // Opcional, para que se vea un feedback
 
     // Llamamos al endpoint de logout del back para que borre la cookie
-    this.http.post(`${this.apiUrl}/auth/logout`, {}).pipe(
-      // tap y catchError por si falla, pero el finalize se ejecuta siempre
-      tap(() => console.log('Cookie de backend borrada')),
-      catchError((err) => {
-        console.error('Error al hacer logout en backend', err);
-        // No importa si falla, limpiamos el front igual
-        return throwError(() => new Error('Error de logout en backend'));
-      }),
-      finalize(() => {
-        // Esto se ejecuta SIEMPRE (éxito o error)
-        this.isLoading.set(false);
-        this.currentUser.set(null);
-        // this.authToken.set(null); // <-- Chau token
+    this.http
+      .post(`${this.apiUrl}/auth/logout`, {})
+      .pipe(
+        // tap y catchError por si falla, pero el finalize se ejecuta siempre
+        tap(() => console.log('Cookie de backend borrada')),
+        catchError((err) => {
+          console.error('Error al hacer logout en backend', err);
+          // No importa si falla, limpiamos el front igual
+          return throwError(() => new Error('Error de logout en backend'));
+        }),
+        finalize(() => {
+          // Esto se ejecuta SIEMPRE (éxito o error)
+          this.isLoading.set(false);
+          this.currentUser.set(null);
+          // this.authToken.set(null); // <-- Chau token
 
-        // Limpiar localStorage
-        if (typeof localStorage !== 'undefined') {
-          // localStorage.removeItem('authToken'); // <-- Chau token
-          localStorage.removeItem('currentUser');
-        }
-        // Redirigir al login
-        this.router.navigate(['/login']);
-      })
-    ).subscribe(); // No te olvides de suscribirte!
+          // Limpiar localStorage
+          if (typeof localStorage !== 'undefined') {
+            // localStorage.removeItem('authToken'); // <-- Chau token
+            localStorage.removeItem('currentUser');
+          }
+          // Redirigir al login
+          this.router.navigate(['/login']);
+        })
+      )
+      .subscribe(); // No te olvides de suscribirte!
   }
 
   // ... (register y handleError quedan igual por ahora) ...
-  register(userData: any): Observable<any> { //... (lo modificamos abajo)
+  register(userData: any): Observable<any> {
+    //... (lo modificamos abajo)
     this.isLoading.set(true);
     return this.http.post(`${this.apiUrl}/auth/register`, userData).pipe(
       tap((res: any) => {
         this.isLoading.set(false);
-        this.modalService.show(
-          'Registro Exitoso',
-          '¡Usuario creado! Ya podés iniciar sesión.'
-        );
+        this.modalService.show('Registro Exitoso', '¡Usuario creado! Ya podés iniciar sesión.');
       }),
       catchError((err) => this.handleError(err, 'Error de Registro')),
       finalize(() => this.isLoading.set(false))
     );
   }
 
-  private handleError(
-    error: HttpErrorResponse,
-    defaultTitle: string
-  ): Observable<never> {
+  private handleError(error: HttpErrorResponse, defaultTitle: string): Observable<never> {
     this.isLoading.set(false);
     console.error('Error en AuthService:', error);
 
@@ -127,8 +126,7 @@ export class AuthService {
         description = error.error.message;
       }
     } else if (error.status === 0 || error.status === 503) {
-      description =
-        'Error de conexión. ¿El servidor backend (NestJS) está corriendo?';
+      description = 'Error de conexión. ¿El servidor backend (NestJS) está corriendo?';
     }
 
     this.modalService.show(title, description);

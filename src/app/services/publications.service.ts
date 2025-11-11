@@ -45,13 +45,18 @@ export class PublicationsService {
   getPublications(
     page: number = 1,
     limit: number = 10,
-    sortBy: SortByType = 'new'
+    sortBy: SortByType = 'new',
+    userId?: string
   ): Observable<PaginatedPublications> {
-    const params = new URLSearchParams({
+    const paramsConfig: Record<string, string> = {
       page: page.toString(),
       limit: limit.toString(),
       sortBy: sortBy,
-    });
+    };
+    if (userId) {
+      paramsConfig['userId'] = userId;
+    }
+    const params = new URLSearchParams(paramsConfig);
 
     return this.http
       .get<PaginatedPublications>(`${this.apiUrl}/publications?${params.toString()}`, {
@@ -70,7 +75,7 @@ export class PublicationsService {
   }
   reactToPost(
     postId: string,
-    reaction: ReactionType | 'remove', // 'heart', 'rocket', 'doubt' o 'remove'
+    reaction: ReactionType | 'remove' // 'heart', 'rocket', 'doubt' o 'remove'
   ): Observable<Publication> {
     // El DTO del backend espera un body: { reaction: '...' }
     const body = { reaction: reaction };

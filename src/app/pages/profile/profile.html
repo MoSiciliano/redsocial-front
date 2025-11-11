@@ -1,1 +1,67 @@
-<p>profile works!</p>
+<app-navbar />
+
+<main class="container mx-auto max-w-2xl px-4 py-8">
+
+  @if (authService.currentUser(); as user) {
+  <div class="rounded-xl border border-muted/20 bg-card/60 p-6 shadow-lg backdrop-blur-lg mb-8">
+    <div class="flex flex-col sm:flex-row items-center gap-6">
+      
+      <img
+        [src]="user.imageProfile"
+        alt="Foto de perfil de {{ user.username }}"
+        class="h-32 w-32 rounded-full object-cover border-4 border-primary/50"
+      />
+
+      <div class="text-center sm:text-left">
+        <h1 class="text-3xl font-bold text-maintext">
+          {{ user.name }} {{ user.lastname }}
+        </h1>
+        <p class="text-lg text-primary">@{{ user.username }}</p>
+        
+        @if (user.description) {
+          <p class="mt-2 text-maintext/80">{{ user.description }}</p>
+        }
+
+        <div class="mt-4 text-sm text-muted space-y-1">
+          <p><strong>Email:</strong> {{ user.email }}</p>
+          <p><strong>Miembro desde:</strong> {{ user.createdAt | date: 'longDate' }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  }
+
+  <div>
+    <h2 class="mb-4 text-2xl font-semibold text-maintext">Mis Últimas 3 Publicaciones</h2>
+
+    @if (isLoading()) {
+    <div class="rounded-xl border border-muted/20 bg-card/60 p-6 text-center text-muted shadow-lg backdrop-blur-lg">
+      <p>Cargando mis publicaciones...</p>
+    </div>
+    }
+
+    @if (!isLoading() && myPosts().length === 0) {
+    <div class="rounded-xl border border-muted/20 bg-card/60 p-6 text-center text-muted shadow-lg backdrop-blur-lg">
+      <p>Aún no has creado ninguna publicación.</p>
+    </div>
+    }
+
+    @if (!isLoading() && myPosts().length > 0) {
+    <div class="space-y-6">
+      @for (post of myPosts(); track post._id) {
+      
+      <div class="rounded-xl border border-muted/20 bg-card/60 p-6 shadow-lg backdrop-blur-lg">
+        
+        <h3 class="text-xl font-bold text-primary">{{ post.title }}</h3>
+        <p class="mt-2 text-maintext/90">{{ post.message }}</p>
+
+        @if (post.imageUrl) {
+        <img [src]="post.imageUrl" alt="Imagen del post" class="mt-4 w-full rounded-lg object-cover" />
+        }
+
+        </div>
+      }
+    </div>
+    }
+  </div>
+</main>

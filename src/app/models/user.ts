@@ -9,4 +9,6 @@ export interface User {
   description?: string;
   imageProfile?: string;
   password: string;
+  rol: 'usuario' | 'administrador';
+  createdAt: string;
 }

@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { Injectable, inject } from '@angular/core';
+import { Injectable, Signal, inject, signal } from '@angular/core';
 import { catchError, Observable, throwError } from 'rxjs';
 import { ModalService } from './modal.service';
 import { Publication, ReactionType } from '../models/publication';
@@ -22,6 +22,10 @@ export class PublicationsService {
   private modalService = inject(ModalService);
 
   private apiUrl = environment.apiUrl;
+
+  currentSort = signal<SortByType>('new');
+  sortOptions: SortByType[] = ['new', 'rockets', 'hearts', 'doubts'];
+
   createPublication(publication: FormData): Observable<Publication> {
     return this.http
       .post<Publication>(`${this.apiUrl}/publications`, publication, {
@@ -45,17 +49,23 @@ export class PublicationsService {
   getPublications(
     page: number = 1,
     limit: number = 10,
-    sortBy: SortByType = 'new',
-    userId?: string
+    // ¡NUEVO! Aceptamos "overrides" opcionales
+    options: { userId?: string; sortBy?: SortByType } = {}
   ): Observable<PaginatedPublications> {
+    // Usamos el 'sortBy' del override, O el global del servicio
+    const sortToUse = options.sortBy || this.currentSort();
+
     const paramsConfig: Record<string, string> = {
       page: page.toString(),
       limit: limit.toString(),
-      sortBy: sortBy,
+      sortBy: sortToUse,
     };
-    if (userId) {
-      paramsConfig['userId'] = userId;
+
+    // Si nos pasaron un 'userId' en las opciones, lo usamos
+    if (options.userId) {
+      paramsConfig['userId'] = options.userId;
     }
+
     const params = new URLSearchParams(paramsConfig);
 
     return this.http
@@ -67,11 +77,16 @@ export class PublicationsService {
           console.error('Error al obtener las publicaciones:', err);
           this.modalService.show(
             'Error al cargar publicaciones',
-            'No se pudieron cargar las publicaciones. Por favor, intenta nuevamente más tarde.'
+            'No se pudieron cargar las publicaciones.'
           );
           return throwError(() => err);
         })
       );
+  }
+  changeSort(newSort: SortByType) {
+    if (this.currentSort() === newSort) return; // Si es el mismo, no hace nada
+
+    this.currentSort.set(newSort);
   }
   reactToPost(
     postId: string,
@@ -91,19 +106,4 @@ export class PublicationsService {
     // No mostramos modal para que sea más rápido
     return throwError(() => err);
   }
-  // addLike(postId: string): Observable<Publication> {
-  //   return this.http
-  //     .post<Publication>(`${this.apiUrl}/publications/${postId}/like`, { withCredentials: true })
-  //     .pipe(catchError((err) => this.handleLikeError(err)));
-  // }
-  // removeLike(postId: string): Observable<Publication> {
-  //   return this.http
-  //     .delete<Publication>(`${this.apiUrl}/publications/${postId}/like`, { withCredentials: true })
-  //     .pipe(catchError((err) => this.handleLikeError(err)));
-  // }
-  // private handleLikeError(err: any): Observable<never> {
-  //   console.error('Error en la operación de Like:', err);
-  //   // No mostramos modal para que sea más rápido, pero sí logueamos
-  //   return throwError(() => err);
-  // }
 }

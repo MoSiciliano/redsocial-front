@@ -32,24 +32,26 @@ export class Profile implements OnInit { // <-- 4. Implementa OnInit
     const currentUser = this.authService.currentUser();
 
     if (!currentUser) {
-      console.error('No se pudo encontrar el usuario para cargar el perfil.');
-      this.isLoading.set(false);
+      // ... (tu error)
       return;
     }
 
     const userId = currentUser._id;
 
-    // --- 7. ¡LA LLAMADA CLAVE! ---
-    // Llamamos al 'getPublications' que ya existe, pero con
-    // los parámetros para "Mi Perfil":
+    // ¡ARREGLADO!
+    // Ahora le pasamos un objeto de "opciones"
+    // con el 'userId' y el 'sortBy' que queremos
+    // (ignorando el filtro global).
     this.pubService.getPublications(
       1,          // 1ra página
-      3,          // Límite de 3 (como pide el TP)
-      'new',      // Ordenados por 'new' (los más nuevos)
-      userId      // ¡Filtrados por nuestro userId!
+      3,          // Límite de 3
+      {
+        sortBy: 'new', // Los más nuevos
+        userId: userId  // ¡Solo los de este usuario!
+      }
     ).subscribe({
       next: (res) => {
-        this.myPosts.set(res.docs); // Guardamos los 3 posts
+        this.myPosts.set(res.docs);
         this.isLoading.set(false);
       },
       error: (err) => {

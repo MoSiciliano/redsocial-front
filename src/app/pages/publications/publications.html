@@ -4,39 +4,33 @@
   <app-create-post (postCreated)="onPostCreated($event)" />
 
   <div class="mt-8">
-    <h2 class="mb-4 text-2xl font-semibold text-maintext">Últimos Sparks</h2>
-
-    <div class="mb-4 flex flex-wrap gap-2">
-      @for (sort of sortOptions; track sort) {
-      <button
-        (click)="changeSort(sort)"
-        class="rounded-full px-4 py-1.5 text-sm font-semibold transition-colors"
-        [class.bg-primary]="currentSort() === sort"
-        [class.text-card]="currentSort() === sort"
-        [class.bg-card/60]="currentSort() !== sort"
-        [class.text-muted]="currentSort() !== sort"
-        [class.hover:bg-primary/80]="currentSort() !== sort"
-      >
-        {{ sort === 'new' ? 'Nuevos' : '' }}
-        {{ sort === 'rockets' ? 'Viables 🚀' : '' }}
-        {{ sort === 'hearts' ? 'Interesantes ❤️' : '' }}
-        {{ sort === 'doubts' ? 'Dudosos 🤔' : '' }}
-      </button>
+    <h2 class="mb-4 text-2xl font-semibold text-maintext">
+      @switch (pubService.currentSort()) {
+        @case ('new') { Últimos Sparks }
+        @case ('rockets') { Sparks Viables 🚀 }
+        @case ('hearts') { Sparks Interesantes ❤️ }
+        @case ('doubts') { Sparks Dudosos 🤔 }
       }
-    </div>
+    </h2>
 
     @if (isLoading()) {
     <div class="rounded-xl border border-muted/20 bg-card/60 p-6 text-center text-muted shadow-lg backdrop-blur-lg">
       <p>Cargando publicaciones...</p>
     </div>
-    } @else if (!isLoading() && posts().length === 0) {
+    } 
+    
+    @else if (!isLoading() && posts().length === 0) {
     <div class="rounded-xl border border-muted/20 bg-card/60 p-6 text-center text-muted shadow-lg backdrop-blur-lg">
       <p>¡Aún no hay publicaciones! Sé el primero en crear un Spark.</p>
     </div>
-    } @else {
+    } 
+    
+    @else {
+    
     <div class="space-y-6">
       @for (post of posts(); track post._id) {
       <div class="rounded-xl border border-muted/20 bg-card/60 p-6 shadow-lg backdrop-blur-lg">
+        
         <div class="flex items-center gap-3">
           <img [src]="post.autor.imageProfile" alt="Avatar de {{ post.autor.username }}" class="h-10 w-10 rounded-full object-cover" />
           <span class="font-semibold text-maintext">{{ post.autor.username }}</span>
@@ -73,7 +67,7 @@
               class="p-2 text-muted transition-colors hover:text-blue-500"
               [class.text-blue-500]="getUserReaction(post) === 'rocket'"
             >
-              <span classf="flex h-6 w-6 items-center justify-center text-xl">🚀</span>
+              <span class="flex h-6 w-6 items-center justify-center text-xl">🚀</span>
             </button>
             <span class="text-sm text-muted">{{ post.rocketCount }}</span>
           </div>
@@ -92,7 +86,30 @@
         </div>
       </div>
       }
+    </div> <div class="mt-10 flex justify-center">
+      
+      @if (currentPage() < totalPages() && !isLoadingMore()) {
+        <button
+          (click)="onLoadMore()"
+          class="rounded-full bg-primary px-6 py-2.5 text-sm font-semibold text-card transition-transform hover:scale-105"
+        >
+          Cargar más publicaciones
+        </button>
+      }
+
+      @if (isLoadingMore()) {
+        <div class="flex items-center gap-2 text-muted">
+          <svg class="animate-spin h-5 w-5 text-primary" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+          </svg>
+          <span>Cargando...</span>
+        </div>
+      }
+
+      @if (currentPage() >= totalPages() && posts().length > 0 && !isLoading()) {
+        <p class="text-muted">No hay más publicaciones por cargar.</p>
+      }
     </div>
-    }
-  </div>
-</main>
+
+    } </div> </main>

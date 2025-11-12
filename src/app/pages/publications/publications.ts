@@ -1,4 +1,4 @@
-import { Component, ChangeDetectionStrategy, OnInit, inject, signal } from '@angular/core';
+import { Component, ChangeDetectionStrategy, OnInit, inject, signal, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { NavbarComponent } from '../../components/nav/nav';
 import { Publication, ReactionType } from '../../models/publication';
@@ -14,22 +14,31 @@ import { AuthService } from '../../services/auth.service';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class Publications implements OnInit {
-  private pubService = inject(PublicationsService);
-  private authService = inject(AuthService);
+  pubService = inject(PublicationsService);
+  authService = inject(AuthService);
 
   isLoading = signal(true);
   posts = signal<Publication[]>([]);
 
-  currentSort = signal<SortByType>('new');
-  sortOptions: SortByType[] = ['new', 'rockets', 'hearts', 'doubts'];
-
-  ngOnInit(): void {
-    this.loadPosts();
+  currentPage = signal(1);
+  totalPages = signal(1);
+  isLoadingMore = signal(false);
+  constructor() {
+    effect(() => {
+      this.pubService.currentSort();
+      this.currentPage.set(1);
+      this.loadPosts();
+    });
   }
+  ngOnInit(): void {}
 
-  loadPosts() {
-    this.isLoading.set(true);
-    this.pubService.getPublications(1,10, this.currentSort()).subscribe({
+  loadPosts(replace: boolean = false) {
+    if (replace) {
+      this.isLoading.set(true);
+    } else {
+      this.isLoadingMore.set(true);
+    }
+    this.pubService.getPublications(this.currentPage(), 10).subscribe({
       next: (res) => {
         this.posts.set(res.docs);
         this.isLoading.set(false);
@@ -37,20 +46,25 @@ export class Publications implements OnInit {
       error: (err) => {
         this.isLoading.set(false);
       },
+      complete: () => {
+        this.isLoading.set(false);
+        this.isLoadingMore.set(false);
+      },
     });
   }
+  onLoadMore() {
+    if (this.currentPage() >= this.totalPages()) return; // No hay más páginas
 
-  changeSort(newSort: SortByType) {
-    if (this.currentSort() === newSort) return; 
-    this.currentSort.set(newSort);
-    this.loadPosts();
+    this.currentPage.update((page) => page + 1); // Incrementa la página
+    this.loadPosts(false); // Carga más
   }
-
   onPostCreated(newPost: Publication) {
-    if (this.currentSort() === 'new') {
+    if (this.pubService.currentSort() === 'new' && this.currentPage() === 1) {
       this.posts.update((listaActual) => [newPost, ...listaActual]);
+    } else {
+      // Si estamos en otro filtro (ej: 'rockets') o en otra página,recargo todo para que se apliquen los filtros.
+      this.loadPosts(true);
     }
-    this.loadPosts();
   }
 
   getUserReaction(post: Publication): ReactionType | null {
@@ -65,7 +79,7 @@ export class Publications implements OnInit {
   }
   onReact(post: Publication, reaction: ReactionType) {
     const currentReaction = this.getUserReaction(post);
-    
+
     let reactionToSend: ReactionType | 'remove';
 
     if (currentReaction === reaction) {

@@ -93,8 +93,28 @@ export class Publications implements OnInit {
     // Llamamos al nuevo servicio
     this.pubService.reactToPost(post._id, reactionToSend).subscribe({
       next: (updatedPost) => {
-        // Actualizamos el post en la lista con la data nueva
-        this.updatePostInList(updatedPost);
+        const currentFilter = this.pubService.currentSort();
+        const wasRemoval = reactionToSend === 'remove';
+
+        if (wasRemoval && currentFilter !== 'new') {
+          // Comprobamos si la reacción quitada (singular)
+          // coincide con el filtro actual (plural)
+          const filterMatchesReaction =
+            (currentFilter === 'hearts' && reaction === 'heart') ||
+            (currentFilter === 'rockets' && reaction === 'rocket') ||
+            (currentFilter === 'doubts' && reaction === 'doubt');
+
+          if (filterMatchesReaction) {
+            // ...sacamos el post de la lista.
+            this.removePostFromList(post._id);
+          } else {
+            // ...si no, solo actualizamos el post (como antes).
+            this.updatePostInList(updatedPost);
+          }
+        } else {
+          // ...si no, solo actualizamos el post (como antes).
+          this.updatePostInList(updatedPost);
+        }
       },
       error: (err) => {
         console.error('Error al reaccionar', err);
@@ -106,7 +126,7 @@ export class Publications implements OnInit {
     this.posts.update((currentPosts) => {
       // Buscamos el índice del post a actualizar
       const index = currentPosts.findIndex((p) => p._id === updatedPost._id);
-      if (index === -1) return currentPosts; // No lo encontró (raro)
+      if (index === -1) return currentPosts;
 
       // Creamos un nuevo array (inmutabilidad)
       const newPosts = [...currentPosts];
@@ -115,5 +135,8 @@ export class Publications implements OnInit {
 
       return newPosts;
     });
+  }
+  private removePostFromList(postId: string) {
+    this.posts.update((currentPosts) => currentPosts.filter((p) => p._id !== postId));
   }
 }

@@ -2,25 +2,22 @@ import { Component, OnInit, inject, signal } from '@angular/core'; // <-- 1. Imp
 import { CommonModule } from '@angular/common';
 import { AuthService } from '../../services/auth.service';
 import { PublicationsService } from '../../services/publications.service'; // <-- 2. Importa el servicio de Pubs
-import { Publication } from '../../models/publication'; // <-- 3. Importa el modelo
+import { Publication, ReactionType } from '../../models/publication'; // <-- 3. Importa el modelo
 import { NavbarComponent } from '../../components/nav/nav';
 
 @Component({
   selector: 'app-profile',
   standalone: true,
-  imports: [CommonModule, NavbarComponent], // (Luego agregaremos el PostItem)
+  imports: [CommonModule, NavbarComponent], 
   templateUrl: './profile.html',
 })
-export class Profile implements OnInit { // <-- 4. Implementa OnInit
+export class Profile implements OnInit {
   
-  // --- Inyección de Servicios ---
-  authService = inject(AuthService); // Ya lo tenías
-  private pubService = inject(PublicationsService); // <-- 5. Inyecta el servicio
-
+  authService = inject(AuthService);
+  private pubService = inject(PublicationsService); 
   // --- Señales de Estado ---
-  myPosts = signal<Publication[]>([]); // <-- 6. Señal para guardar los posts
-  isLoading = signal(true); // Señal para el "Cargando..."
-
+  myPosts = signal<Publication[]>([]);
+  isLoading = signal(true);
   // El currentUser() ya lo provee el authService
 
   ngOnInit() {
@@ -32,32 +29,68 @@ export class Profile implements OnInit { // <-- 4. Implementa OnInit
     const currentUser = this.authService.currentUser();
 
     if (!currentUser) {
-      // ... (tu error)
       return;
     }
 
     const userId = currentUser._id;
+    this.pubService
+      .getPublications(1, 3, {
+        sortBy: 'new', 
+        userId: userId, 
+      })
+      .subscribe({
+        next: (res) => {
+          this.myPosts.set(res.docs);
+          this.isLoading.set(false);
+        },
+        error: (err) => {
+          console.error('Error al cargar mis publicaciones:', err);
+          this.isLoading.set(false);
+        },
+      });
+  }
+  getUserReaction(post: Publication): ReactionType | null {
+    const currentUserId = this.authService.currentUser()?._id;
+    if (!currentUserId) return null;
 
-    // ¡ARREGLADO!
-    // Ahora le pasamos un objeto de "opciones"
-    // con el 'userId' y el 'sortBy' que queremos
-    // (ignorando el filtro global).
-    this.pubService.getPublications(
-      1,          // 1ra página
-      3,          // Límite de 3
-      {
-        sortBy: 'new', // Los más nuevos
-        userId: userId  // ¡Solo los de este usuario!
-      }
-    ).subscribe({
-      next: (res) => {
-        this.myPosts.set(res.docs);
-        this.isLoading.set(false);
+    if (post.hearts.includes(currentUserId)) return 'heart';
+    if (post.rockets.includes(currentUserId)) return 'rocket';
+    if (post.doubts.includes(currentUserId)) return 'doubt';
+
+    return null;
+  }
+
+  onReact(post: Publication, reaction: ReactionType) {
+    const currentReaction = this.getUserReaction(post);
+    let reactionToSend: ReactionType | 'remove';
+
+    if (currentReaction === reaction) {
+      reactionToSend = 'remove';
+    } else {
+      reactionToSend = reaction;
+    }
+
+    // El pubService ya está inyectado, así que esto funciona
+    this.pubService.reactToPost(post._id, reactionToSend).subscribe({
+      next: (updatedPost) => {
+        // Usamos el método de actualizar para myPosts
+        this.updatePostInList(updatedPost);
       },
       error: (err) => {
-        console.error('Error al cargar mis publicaciones:', err);
-        this.isLoading.set(false);
+        console.error('Error al reaccionar', err);
       },
+    });
+  }
+
+  private updatePostInList(updatedPost: Publication) {
+    // Actualizamos la señal myPosts (¡cuidado que aquí se llama 'myPosts'!)
+    this.myPosts.update((currentPosts) => { 
+      const index = currentPosts.findIndex((p) => p._id === updatedPost._id);
+      if (index === -1) return currentPosts;
+
+      const newPosts = [...currentPosts];
+      newPosts[index] = updatedPost;
+      return newPosts;
     });
   }
 }

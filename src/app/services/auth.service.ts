@@ -1,6 +1,6 @@
 import { Injectable, inject, signal } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
-import { Observable, throwError } from 'rxjs';
+import { EMPTY, Observable, Subscription, throwError, timer } from 'rxjs';
 import { tap, catchError, finalize } from 'rxjs/operators';
 import { ModalService } from './modal.service';
 import { Router } from '@angular/router';
@@ -23,25 +23,29 @@ export class AuthService {
   // authToken = signal<string | null>(null); // <-- Chau token
   isLoading = signal(false);
 
+  private sessionModalTimer = signal<Subscription | null>(null);
+  private sessionExpireTimer = signal<Subscription | null>(null);
+  private modalSubscription: Subscription | null = null;
+  
+  
   constructor() {
-    // Al iniciar el servicio, intentar cargar el usuario desde localStorage
-    this.loadUserFromStorage();
+    //this.loadUserFromStorage();
   }
 
-  private loadUserFromStorage() {
-    if (typeof localStorage !== 'undefined') {
-      // Ya no leemos el token, solo el usuario
-      const user = localStorage.getItem('currentUser');
-      if (user) {
-        try {
-          this.currentUser.set(JSON.parse(user) as User);
-        } catch (e) {
-          console.error('Error parsing user from localStorage', e);
-          this.logout();
-        }
-      }
-    }
-  }
+  // private loadUserFromStorage() {
+  //   if (typeof localStorage !== 'undefined') {
+  //     // Ya no leemos el token, solo el usuario
+  //     const user = localStorage.getItem('currentUser');
+  //     if (user) {
+  //       try {
+  //         this.currentUser.set(JSON.parse(user) as User);
+  //       } catch (e) {
+  //         console.error('Error parsing user from localStorage', e);
+  //         this.logout();
+  //       }
+  //     }
+  //   }
+  // }
 
   login(credentials: Credentials): Observable<any> {
     this.isLoading.set(true);
@@ -49,14 +53,13 @@ export class AuthService {
       .post(`${this.apiUrl}/auth/login`, credentials) // El interceptor agrega withCredentials
       .pipe(
         tap((res: any) => {
-          // this.authToken.set(res.token); // <-- Chau token
-          this.currentUser.set(res.user as User);
+           this.currentUser.set(res.user as User);
 
           // Guardar solo el usuario en localStorage
           if (typeof localStorage !== 'undefined') {
-            // localStorage.setItem('authToken', res.token); // <-- Chau token
             localStorage.setItem('currentUser', JSON.stringify(res.user));
           }
+          this.startSessionTimers()
           this.isLoading.set(false);
         }),
         catchError((err) => this.handleError(err, 'Error de Login')),
@@ -64,9 +67,9 @@ export class AuthService {
       );
   }
 
-  // ... (register lo vemos en la sección de imágenes) ...
 
   logout() {
+    this.clearSessionTimers();
     this.isLoading.set(true); // Opcional, para que se vea un feedback
 
     // Llamamos al endpoint de logout del back para que borre la cookie
@@ -81,26 +84,21 @@ export class AuthService {
           return throwError(() => new Error('Error de logout en backend'));
         }),
         finalize(() => {
-          // Esto se ejecuta SIEMPRE (éxito o error)
           this.isLoading.set(false);
           this.currentUser.set(null);
-          // this.authToken.set(null); // <-- Chau token
 
           // Limpiar localStorage
           if (typeof localStorage !== 'undefined') {
-            // localStorage.removeItem('authToken'); // <-- Chau token
             localStorage.removeItem('currentUser');
           }
-          // Redirigir al login
           this.router.navigate(['/login']);
         })
       )
-      .subscribe(); // No te olvides de suscribirte!
+      .subscribe(); 
   }
 
-  // ... (register y handleError quedan igual por ahora) ...
+ 
   register(userData: any): Observable<any> {
-    //... (lo modificamos abajo)
     this.isLoading.set(true);
     return this.http.post(`${this.apiUrl}/auth/register`, userData).pipe(
       tap((res: any) => {
@@ -110,6 +108,83 @@ export class AuthService {
       catchError((err) => this.handleError(err, 'Error de Registro')),
       finalize(() => this.isLoading.set(false))
     );
+  }
+
+  authorize(): Observable<any> {
+    return this.http.post<User>(`${this.apiUrl}/auth/authorize`, {}).pipe(
+      tap((user: User) => {
+        this.currentUser.set(user);
+        if (typeof localStorage !== 'undefined') {
+          localStorage.setItem('currentUser', JSON.stringify(user));
+        }
+      }),
+      catchError((err) => {
+        this.currentUser.set(null);
+        if (typeof localStorage !== 'undefined') {
+          localStorage.removeItem('currentUser');
+        }
+        return throwError(() => err); 
+      })
+    );
+  }
+  refreshSession(): Observable<any> {
+    return this.http.post(`${this.apiUrl}/auth/refresh`, {}).pipe(
+      tap(() => {
+        console.log('Sesión refrescada');
+        // Reiniciamos los timers
+        this.startSessionTimers();
+      }),
+      catchError((err) => {
+        //forzamos logout.
+        this.modalService.show('Sesión Expirada', 'Por favor, inicia sesión de nuevo.');
+        this.logout();
+        return EMPTY; // No emite nada más
+      })
+    );
+  }
+  startSessionTimers() {
+    this.clearSessionTimers(); // Limpia timers anteriores
+
+    // Timer para mostrar el modal de refresco (10 minutos)
+    const modalTimerSub = timer(600000).subscribe(() => {
+      this.modalService.showConfirm(
+        'Sesión por expirar',
+        'Tu sesión vence en 5 minutos. Refrescando automáticamente...'
+      );
+      this.modalSubscription = this.modalService.choice$.subscribe(choice => {
+        if (choice) {
+          // El usuario dijo "Sí"
+          this.refreshSession().subscribe(() => {
+            this.modalService.show('Sesión Extendida', 'Tu sesión ha sido extendida 15 minutos.');
+          });
+        } else {
+          // El usuario dijo "No" o cerró el modal
+          // No hacemos nada, el timer de expiración (2) seguirá corriendo
+        }
+        this.modalSubscription?.unsubscribe(); // Limpiamos la suscripción
+      });
+
+    });
+    this.sessionModalTimer.set(modalTimerSub);
+
+
+    //  Timer para forzar logout (15 minutos)
+    const expireTimerSub = timer(900000).subscribe(() => {
+      this.modalService.show('Sesión Expirada', 'Tu sesión ha finalizado.');
+      this.logout(); // Llama a tu método de logout
+    });
+    this.sessionExpireTimer.set(expireTimerSub);
+  }
+
+  clearSessionTimers() {
+    this.sessionModalTimer()?.unsubscribe();
+    this.sessionModalTimer.set(null);
+    
+    this.sessionExpireTimer()?.unsubscribe();
+    this.sessionExpireTimer.set(null);
+
+    this.modalSubscription?.unsubscribe(); 
+    this.modalSubscription = null;
   }
 
   private handleError(error: HttpErrorResponse, defaultTitle: string): Observable<never> {

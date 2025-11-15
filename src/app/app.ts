@@ -1,8 +1,9 @@
-import { Component, ChangeDetectionStrategy } from '@angular/core';
+import { Component, ChangeDetectionStrategy, signal, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterOutlet } from '@angular/router';
+import { NavigationCancel, NavigationEnd, NavigationError, NavigationStart, Router, RouterOutlet } from '@angular/router';
 import { ModalComponent } from './components/modal/modal';
 import { NavbarComponent } from './components/nav/nav';
+import { filter, map } from 'rxjs';
 
 @Component({
   selector: 'app-root',
@@ -13,6 +14,21 @@ import { NavbarComponent } from './components/nav/nav';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class App {
-  // El componente principal ahora solo se encarga de mostrar el router
-  // y los componentes globales (como el modal).
+  isLoadingRoute = signal(false);
+  private router = inject(Router);
+
+  constructor() {
+    //  Escucha los eventos del router para activar el spinner
+    this.router.events.pipe(
+      filter(e => 
+        e instanceof NavigationStart || 
+        e instanceof NavigationEnd ||
+        e instanceof NavigationCancel ||
+        e instanceof NavigationError
+      ),
+      map(e => e instanceof NavigationStart)
+    ).subscribe(isLoading => {
+      this.isLoadingRoute.set(isLoading); 
+    });
+  }
 }

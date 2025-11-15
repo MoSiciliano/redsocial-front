@@ -25,6 +25,7 @@ export const routes: Routes = [
     path: 'posts',
     loadComponent: () => import('./pages/publications/publications').then((m) => m.Publications),
     canActivate: [authGuard],
+  
   },
   {
     path: 'profile',
@@ -36,5 +37,5 @@ export const routes: Routes = [
 
   // Redirecciones
   { path: '', redirectTo: 'login', pathMatch: 'full' },
-  { path: '**', redirectTo: 'publicaciones' }, // O una página 404
+  { path: '**', redirectTo: 'posts' }, // O una página 404
 ];

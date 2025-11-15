@@ -1,19 +1,35 @@
 import { inject } from '@angular/core';
 import { CanActivateFn, Router } from '@angular/router';
 import { AuthService } from '../services/auth.service';
-
-// src/app/guards/auth-guard.ts
-// ... (imports)
-export const authGuard: CanActivateFn = (route, state) => {
+import { firstValueFrom } from 'rxjs';
+export const authGuard: CanActivateFn = async (route, state): Promise<boolean> => {
   const authService = inject(AuthService);
   const router = inject(Router);
 
-  // Si el usuario existe en la señal, puede pasar
-  if (authService.currentUser()) { 
-    return true;
+  //  Revisa si el usuario YA está cargado en la señal
+  if (authService.currentUser()) {
+    authService.startSessionTimers(); // Reinicia los timers
+    return true; 
   }
 
-  // Si no, se redirige al login
-  router.navigate(['/login']);
-  return false;
+  //  Si no hay usuario, intenta autorizar con la cookie.
+  //    Usamos 'try/catch' para manejar el éxito y el error.
+  try {
+    // Convertimos el Observable de authorize() en una Promesa
+    // y esperamos su resultado.
+    const user = await firstValueFrom(authService.authorize());
+
+    if (user) {
+      authService.startSessionTimers();
+      return true; 
+    }
+
+    // Esto no debería pasar, pero por si acaso
+    router.navigate(['/login']);
+    return false;
+  } catch (error) {
+   router.navigate(['/login']);
+
+    return false; 
+  }
 };

@@ -1,23 +1,4 @@
 
-:root {
-  color-scheme: dark;
-  --color-primary-rgb: 139 92 246; /* text-primary (violeta) */
-  --color-primary: 139 92 246;
-  --color-secondary-rgb: 196 181 253; /* text-secondary (violeta claro) */
-  --color-secondary: 196 181 253;
-  --color-background-rgb: 11 10 13; /* bg-background (negro) */
-  --color-background: 11 10 13;
-  --color-maintext-rgb: 236 236 241; /* text-maintext (blanco) */
-  --color-maintext: 236 236 241;
-  --color-muted-rgb: 131 131 138; /* text-muted (gris) */
-  --color-muted: 131 131 138;
-  --color-card-rgb: 23 23 27; /* bg-card (gris oscuro) */
-  --color-card: 23 23 27;
-  --color-danger-rgb: 239 68 68; /* text-danger (rojo) */
-  --color-danger: 239 68 68;
-}
-
-
 .spark {
   position: absolute;
   width: 4px;

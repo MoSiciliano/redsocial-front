@@ -35,12 +35,18 @@ export class Publications implements OnInit {
   loadPosts(replace: boolean = false) {
     if (replace) {
       this.isLoading.set(true);
+      this.posts.set([]);
     } else {
       this.isLoadingMore.set(true);
     }
     this.pubService.getPublications(this.currentPage(), 10).subscribe({
       next: (res) => {
-        this.posts.set(res.docs);
+        if (replace) {
+          this.posts.set(res.docs);
+        } else {
+          this.posts.update((currentPosts) => [...currentPosts, ...res.docs]);
+        }
+        this.totalPages.set(res.totalPages);
         this.isLoading.set(false);
       },
       error: (err) => {

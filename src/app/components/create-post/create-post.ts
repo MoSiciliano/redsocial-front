@@ -44,7 +44,6 @@ export class CreatePost {
   // Formulario
   postForm = this.fb.group({
     message: ['', [Validators.required, Validators.maxLength(1000)]],
-    imageUrl: [null],
   });
 
   // Previsualización de imagen

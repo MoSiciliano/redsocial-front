@@ -82,7 +82,7 @@ export class PublicationsService {
         })
       );
   }
-  getPublicationsById(pubId: string): Observable<Publication> {
+  getPublicationById(pubId: string): Observable<Publication> {
     return this.http
       .get<Publication>(`${this.apiUrl}/publications/${pubId}`, {
         withCredentials: true,

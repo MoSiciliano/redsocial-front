@@ -46,7 +46,7 @@ export class PostDetail implements OnInit {
           if (!id) throw new Error('No ID');
           
           this.isLoading.set(true);
-          return this.pubService.getPublicationsById(id);
+          return this.pubService.getPublicationById(id);
         }),
         switchMap((publication) => {
           this.post.set(publication);
@@ -54,7 +54,7 @@ export class PostDetail implements OnInit {
         })
       )
       .subscribe((commentsRes) => {
-        this.comments.set(commentsRes.docs);
+        this.comments.set(commentsRes.docs || []);
         this.totalPages.set(commentsRes.totalPages);
         this.currentPage.set(1);
         this.isLoading.set(false);

@@ -3,13 +3,14 @@ import { CommonModule } from '@angular/common';
 import { NavbarComponent } from '../../components/nav/nav';
 import { Publication, ReactionType } from '../../models/publication';
 import { CreatePost } from '../../components/create-post/create-post';
-import { PublicationsService, SortByType } from '../../services/publications.service';
+import { PublicationsService } from '../../services/publications.service';
 import { AuthService } from '../../services/auth.service';
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-posts',
   standalone: true,
-  imports: [CommonModule, NavbarComponent, CreatePost],
+  imports: [CommonModule, NavbarComponent, CreatePost, RouterLink],
   templateUrl: 'publications.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

@@ -87,7 +87,7 @@
         </button>
         } @if (isLoadingMore()) {
         <div class="flex items-center gap-2 text-muted">
-          <svg class="animate-spin h-5 w-5 text-primary" ...>...</svg>
+          <svg class="animate-spin h-5 w-5 text-primary" ></svg>
           <span>Cargando...</span>
         </div>
         } @if (currentPage() >= totalPages() && posts().length > 0 && !isLoading()) {

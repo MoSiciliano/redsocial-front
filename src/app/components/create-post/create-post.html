@@ -1,4 +1,4 @@
-<!-- <form
+<form
   [formGroup]="postForm"
   (ngSubmit)="onSubmit()"
   class="mb-6 w-full max-w-2xl mx-auto rounded-xl border border-muted/20 bg-card/60 p-6 shadow-lg backdrop-blur-lg animate-fade-in"
@@ -75,46 +75,5 @@
         </button>
       </div>
     </div>
-  </div>
-</form> -->
-<form
-  [formGroup]="postForm"
-  (ngSubmit)="onSubmit()"
-  class="..."
->
-  <div class="flex items-start gap-4">
-    <img [src]="currentUser()?.imageProfile" ... />
-
-    <div class="flex-1">
-    
-      <div class="relative mb-3">
-        <input
-          id="title"
-          formControlName="title"
-          type="text"
-          class="..."
-          placeholder="Título"
-        />
-        <label for="title" class="...">
-          Título de tu Spark...
-        </label>
-      </div>
-      <div class="relative mb-3">
-        <textarea
-          id="message"
-          formControlName="message"
-          rows="4"
-          class="peer block w-full ..."
-          placeholder="¿En qué estás pensando?"
-        ></textarea>
-        <label
-          for="message"
-          class="absolute top-4 left-3 ..."
-        >
-          ¿En qué estás pensando?
-        </label>
-      </div>
-      
-      </div>
   </div>
 </form>

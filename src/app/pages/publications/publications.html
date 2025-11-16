@@ -5,111 +5,90 @@
 
   <div class="mt-8">
     <h2 class="mb-4 text-2xl font-semibold text-maintext">
-      @switch (pubService.currentSort()) {
-        @case ('new') { Últimos Sparks }
-        @case ('rockets') { Sparks Viables 🚀 }
-        @case ('hearts') { Sparks Interesantes ❤️ }
-        @case ('doubts') { Sparks Dudosos 🤔 }
-      }
+      @switch (pubService.currentSort()) { @case ('new') { Últimos Sparks } @case ('rockets') {
+      Sparks Viables 🚀 } @case ('hearts') { Sparks Interesantes ❤️ } @case ('doubts') { Sparks
+      Dudosos 🤔 } }
     </h2>
 
     @if (isLoading()) {
     <div class="rounded-xl border border-muted/20 bg-card/60 p-6 text-center text-muted shadow-lg backdrop-blur-lg">
       <p>Cargando publicaciones...</p>
     </div>
-    } 
-    
-    @else if (!isLoading() && posts().length === 0) {
+    } @else if (!isLoading() && posts().length === 0) {
     <div class="rounded-xl border border-muted/20 bg-card/60 p-6 text-center text-muted shadow-lg backdrop-blur-lg">
       <p>¡Aún no hay publicaciones! Sé el primero en crear un Spark.</p>
     </div>
-    } 
-    
-    @else {
-    
+    } @else {
+
     <div class="space-y-6">
       @for (post of posts(); track post._id) {
-      <div class="rounded-xl border border-muted/20 bg-card/60 p-6 shadow-lg backdrop-blur-lg">
-        
-        <div class="flex items-center gap-3">
-          <img [src]="post.autor.imageProfile" alt="Avatar de {{ post.autor.username }}" class="h-10 w-10 rounded-full object-cover" />
-          <span class="font-semibold text-maintext">{{ post.autor.username }}</span>
+
+      <a routerLink="['/posts', post._id]" class="block transition-transform hover:scale-[1.02]">
+        <div class="rounded-xl border border-muted/20 bg-card/60 p-6 shadow-lg backdrop-blur-lg">
+          <div class="flex items-center gap-3">
+            <img [src]="post.autor.imageProfile" alt="Avatar de {{ post.autor.username }}"
+              class="h-10 w-10 rounded-full object-cover" />
+            <span class="font-semibold text-maintext">{{ post.autor.username }}</span>
+          </div>
+
+          <h3 class="mt-4 text-xl font-bold text-primary">{{ post.title }}</h3>
+          <p class="mt-2 text-maintext/90">{{ post.message }}</p>
+
+          @if (post.imageUrl) {
+          <img [src]="post.imageUrl" alt="Imagen del post" class="mt-4 w-full rounded-lg object-cover" />
+          }
+
+          <div class="mt-4 pt-4 border-t border-muted/20 flex items-center gap-4">
+            <div class="flex items-center gap-2">
+              <button (click)="onReact(post, 'heart')" [class.liked]="getUserReaction(post) === 'heart'"
+                class="like-button relative p-2">
+                <svg class="heart-outline h-6 w-6 text-muted" ...>...</svg>
+                <svg class="heart-fill h-6 w-6 text-danger" ...>...</svg>
+              </button>
+              <span class="text-sm text-muted">{{ post.heartCount }}</span>
+            </div>
+
+            <div class="flex items-center gap-2">
+              <button (click)="onReact(post, 'rocket')" class="p-2 text-muted transition-colors hover:text-blue-500"
+                [class.text-blue-500]="getUserReaction(post) === 'rocket'">
+                <span class="flex h-6 w-6 items-center justify-center text-xl">🚀</span>
+              </button>
+              <span class="text-sm text-muted">{{ post.rocketCount }}</span>
+            </div>
+
+            <div class="flex items-center gap-2">
+              <button (click)="onReact(post, 'doubt')" class="p-2 text-muted transition-colors hover:text-yellow-500"
+                [class.text-yellow-500]="getUserReaction(post) === 'doubt'">
+                <span class="flex h-6 w-6 items-center justify-center text-xl">🤔</span>
+              </button>
+              <span class="text-sm text-muted">{{ post.doubtCount }}</span>
+            </div>
+          </div>
         </div>
-
-        <h3 class="mt-4 text-xl font-bold text-primary">{{ post.title }}</h3>
-        <p class="mt-2 text-maintext/90">{{ post.message }}</p>
-
-        @if (post.imageUrl) {
-        <img [src]="post.imageUrl" alt="Imagen del post" class="mt-4 w-full rounded-lg object-cover" />
-        }
-
-        <div class="mt-4 pt-4 border-t border-muted/20 flex items-center gap-4">
-
-          <div class="flex items-center gap-2">
-            <button
-              (click)="onReact(post, 'heart')"
-              [class.liked]="getUserReaction(post) === 'heart'"
-              class="like-button relative p-2"
-            >
-              <svg class="heart-outline h-6 w-6 text-muted" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.099 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z" />
-              </svg>
-              <svg class="heart-fill h-6 w-6 text-danger" fill="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.099 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z" />
-              </svg>
-            </button>
-            <span class="text-sm text-muted">{{ post.heartCount }}</span>
-          </div>
-
-          <div class="flex items-center gap-2">
-            <button
-              (click)="onReact(post, 'rocket')"
-              class="p-2 text-muted transition-colors hover:text-blue-500"
-              [class.text-blue-500]="getUserReaction(post) === 'rocket'"
-            >
-              <span class="flex h-6 w-6 items-center justify-center text-xl">🚀</span>
-            </button>
-            <span class="text-sm text-muted">{{ post.rocketCount }}</span>
-          </div>
-
-          <div class="flex items-center gap-2">
-            <button
-              (click)="onReact(post, 'doubt')"
-              class="p-2 text-muted transition-colors hover:text-yellow-500"
-              [class.text-yellow-500]="getUserReaction(post) === 'doubt'"
-            >
-              <span class="flex h-6 w-6 items-center justify-center text-xl">🤔</span>
-            </button>
-            <span class="text-sm text-muted">{{ post.doubtCount }}</span>
-          </div>
-
-        </div>
-      </div>
+      </a>
       }
-    </div> <div class="mt-10 flex justify-center">
-      
-      @if (currentPage() < totalPages() && !isLoadingMore()) {
-        <button
-          (click)="onLoadMore()"
-          class="rounded-full bg-primary px-6 py-2.5 text-sm font-semibold text-card transition-transform hover:scale-105"
-        >
-          Cargar más publicaciones
+    </div>
+    <div class="mt-10 flex justify-center">
+      @if (currentPage() < totalPages() && !isLoadingMore()) { <button (click)="onLoadMore()"
+        class="rounded-full bg-primary px-6 py-2.5 text-sm font-semibold text-card transition-transform hover:scale-105">
+        Cargar más publicaciones
         </button>
-      }
-
-      @if (isLoadingMore()) {
+        } @if (isLoadingMore()) {
         <div class="flex items-center gap-2 text-muted">
-          <svg class="animate-spin h-5 w-5 text-primary" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+          <svg class="animate-spin h-5 w-5 text-primary" xmlns="http://www.w3.org/2000/svg" fill="none"
+            viewBox="0 0 24 24">
             <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            <path class="opacity-75" fill="currentColor"
+              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+            </path>
           </svg>
           <span>Cargando...</span>
         </div>
-      }
-
-      @if (currentPage() >= totalPages() && posts().length > 0 && !isLoading()) {
+        } @if (currentPage() >= totalPages() && posts().length > 0 && !isLoading()) {
         <p class="text-muted">No hay más publicaciones por cargar.</p>
-      }
+        }
     </div>
 
-    } </div> </main>
+    }
+  </div>
+</main>

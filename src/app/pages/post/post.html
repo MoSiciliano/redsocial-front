@@ -1,0 +1,68 @@
+<app-navbar />
+<main class="mx-auto max-w-2xl px-4 py-8 pt-24 text-text">
+    <button (click)="location.back()" class="mb-4 flex items-center gap-2 text-sm text-primary hover:underline">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"
+            class="h-4 w-4">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
+        </svg>
+        Volver a Publicaciones
+    </button>
+
+    @if (isLoading()) {
+    <p>Cargando publicación...</p>
+    } @else if (post(); as p) {
+
+    <div class="relative flex w-full flex-col rounded-lg bg-card shadow-lg">
+        <div class="flex items-center gap-3 p-4">
+            <img [src]="p.autor.profileImg" alt="Autor" class="h-10 w-10 rounded-full object-cover" />
+            <span class="font-semibold">{{ p.autor.user }}</span>
+        </div>
+        @if (p.img) {
+        <img [src]="p.img" alt="Publicación" class="w-full object-cover" />
+        }
+        <div class="p-4">
+            <h3 class="text-xl font-bold text-primary">{{ p.title }}</h3>
+            <p class="mt-2">{{ p.description }}</p>
+        </div>
+    </div>
+
+    <form [formGroup]="commentForm" (ngSubmit)="postComment()" class="mt-8 flex gap-3">
+        <input formControlName="message" type="text" placeholder="Escribe un comentario..."
+            class="flex-1 rounded-lg border-2 border-card bg-transparent px-4 py-2 placeholder-text/50 focus:border-primary focus:outline-none" />
+        <button type="submit" [disabled]="commentForm.invalid"
+            class="rounded-lg bg-primary px-5 py-2 font-semibold text-background disabled:opacity-50">
+            Comentar
+        </button>
+    </form>
+
+    <section class="mt-8">
+        <h4 class="text-lg font-semibold">Comentarios</h4>
+
+        <div class="mt-4 flex flex-col gap-4">
+            @for (comment of comments(); track comment._id) {
+            <div classs="flex gap-3 rounded-lg bg-card p-4">
+                <img [src]="comment.autor.profileImg" alt="Autor" class="h-8 w-8 rounded-full object-cover" />
+                <div class="flex-1">
+                    <span class="font-semibold text-primary">{{ comment.autor.user }}</span>
+                    @if (comment.modificado) {
+                    <span class="ml-2 text-xs text-text/50">(editado)</span>
+                    }
+                    <p class="mt-1 text-sm">{{ comment.message }}</p>
+                </div>
+            </div>
+            } @empty {
+            <p class="text-text/60">No hay comentarios. ¡Sé el primero!</p>
+            }
+        </div>
+
+        @if (currentPage() < totalPages()) { <button (click)="loadMoreComments()" [disabled]="isLoadingMore()"
+            class="mt-6 w-full rounded-lg bg-card py-2 font-semibold transition-colors hover:bg-card/80 disabled:opacity-50">
+            @if (isLoadingMore()) { Cargando... } @else { Cargar más comentarios }
+            </button>
+            }
+    </section>
+
+    } @else {
+    <p>La publicación no fue encontrada.</p>
+    }
+</main>

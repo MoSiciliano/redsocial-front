@@ -1,11 +1,3 @@
-// import { Routes } from '@angular/router';
-
-// export const routes: Routes = [
-//   { path: 'login', loadComponent: () => import('./pages/login/login').then((m) => m.Login) },
-
-//   { path: '', redirectTo: 'login', pathMatch: 'full' },
-//   { path: '**', redirectTo: 'home', pathMatch: 'full' },
-// ];
 import { Routes } from '@angular/router';
 import { authGuard } from './guards/auth-guard';
 
@@ -25,15 +17,18 @@ export const routes: Routes = [
     path: 'posts',
     loadComponent: () => import('./pages/publications/publications').then((m) => m.Publications),
     canActivate: [authGuard],
-  
+  },
+
+  {
+    path: 'posts/:id',
+    loadComponent: () => import('./pages/post/post').then((m) => m.Post),
+    canActivate: [authGuard],
   },
   {
     path: 'profile',
-    loadComponent: () =>
-      import('./pages/profile/profile').then((m) => m.Profile),
+    loadComponent: () => import('./pages/profile/profile').then((m) => m.Profile),
     canActivate: [authGuard],
   },
-
 
   // Redirecciones
   { path: '', redirectTo: 'login', pathMatch: 'full' },

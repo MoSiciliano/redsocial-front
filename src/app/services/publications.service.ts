@@ -49,7 +49,6 @@ export class PublicationsService {
   getPublications(
     page: number = 1,
     limit: number = 10,
-    // ¡NUEVO! Aceptamos "overrides" opcionales
     options: { userId?: string; sortBy?: SortByType } = {}
   ): Observable<PaginatedPublications> {
     // Usamos el 'sortBy' del override, O el global del servicio
@@ -81,6 +80,22 @@ export class PublicationsService {
           );
           return throwError(() => err);
         })
+      );
+  }
+  getPublicationsById(pubId: string): Observable<Publication> {
+    return this.http
+      .get<Publication>(`${this.apiUrl}/publications/${pubId}`, {
+        withCredentials: true,
+      })
+      .pipe(
+        catchError((err) => {
+          console.error('Error al obtener la publicación:', err);
+          this.modalService.show(
+            'Error al cargar publicación',
+            'No se pudo cargar la publicación solicitada.'
+          );
+          return throwError(() => err);
+        } )
       );
   }
   changeSort(newSort: SortByType) {

@@ -20,7 +20,6 @@ export class AuthService {
 
   // Señales para el estado de autenticación
   currentUser = signal<User | null>(null);
-  // authToken = signal<string | null>(null); // <-- Chau token
   isLoading = signal(false);
 
   private sessionModalTimer = signal<Subscription | null>(null);

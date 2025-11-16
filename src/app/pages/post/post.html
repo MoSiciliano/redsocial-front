@@ -16,11 +16,11 @@
 
     <div class="relative flex w-full flex-col rounded-lg bg-card shadow-lg">
         <div class="flex items-center gap-3 p-4">
-            <img [src]="p.autor.profileImg" alt="Autor" class="h-10 w-10 rounded-full object-cover" />
+            <img [src]="p.autor.imageProfile" alt="Autor" class="h-10 w-10 rounded-full object-cover" />
             <span class="font-semibold">{{ p.autor.username }}</span>
         </div>
-        @if (p.img) {
-        <img [src]="p.img" alt="Publicación" class="w-full object-cover" />
+        @if (p.imageUrl) {
+        <img [src]="p.imageUrl" alt="Publicación" class="w-full object-cover" />
         }
         <div class="p-4">
             <p class="mt-2">{{ p.message }}</p>

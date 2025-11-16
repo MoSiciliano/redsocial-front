@@ -3,7 +3,6 @@ import { User } from './user';
 export type ReactionType = 'heart' | 'rocket' | 'doubt';
 export interface Publication {
   _id: string;
-  title: string;
   message: string;
   imageUrl?: string;
   autor: User; 

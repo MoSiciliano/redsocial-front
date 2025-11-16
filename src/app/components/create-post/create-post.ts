@@ -43,8 +43,8 @@ export class CreatePost {
 
   // Formulario
   postForm = this.fb.group({
-    title: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(80)]],
     message: ['', [Validators.required, Validators.maxLength(1000)]],
+    imageUrl: [null],
   });
 
   // Previsualización de imagen
@@ -76,7 +76,6 @@ export class CreatePost {
 
     // 1. Construir el FormData
     const formData = new FormData();
-    formData.append('title', this.postForm.value.title!);
     formData.append('message', this.postForm.value.message!);
     
     const file = this.selectedFile();

@@ -9,20 +9,21 @@
     </button>
 
     @if (isLoading()) {
-    <p>Cargando publicación...</p>
+    <div class="flex h-48 items-center justify-center">
+      <div class="h-12 w-12 animate-spin rounded-full border-4 border-primary border-t-transparent"></div>
+    </div>
     } @else if (post(); as p) {
 
     <div class="relative flex w-full flex-col rounded-lg bg-card shadow-lg">
         <div class="flex items-center gap-3 p-4">
             <img [src]="p.autor.profileImg" alt="Autor" class="h-10 w-10 rounded-full object-cover" />
-            <span class="font-semibold">{{ p.autor.user }}</span>
+            <span class="font-semibold">{{ p.autor.username }}</span>
         </div>
         @if (p.img) {
         <img [src]="p.img" alt="Publicación" class="w-full object-cover" />
         }
         <div class="p-4">
-            <h3 class="text-xl font-bold text-primary">{{ p.title }}</h3>
-            <p class="mt-2">{{ p.description }}</p>
+            <p class="mt-2">{{ p.message }}</p>
         </div>
     </div>
 

@@ -1,4 +1,3 @@
-// En: src/app/pages/post-detail/post-detail.ts (Reemplaza el contenido)
 import { Component, ChangeDetectionStrategy, inject, signal, OnInit } from '@angular/core';
 import { CommonModule, Location } from '@angular/common'; // 1. Importa Location
 import { ActivatedRoute, RouterLink } from '@angular/router'; // 2. Importa ActivatedRoute
@@ -9,7 +8,6 @@ import { PublicationsService } from '../../services/publications.service';
 import { CommentsService } from '../../services/comments.service';
 import { NavbarComponent} from '../../components/nav/nav' 
 
-// (Importa tus modelos de Publication y Comment)
 type Publication = any;
 type Comment = any;
 
@@ -24,7 +22,7 @@ export class PostDetail implements OnInit {
   private route = inject(ActivatedRoute);
   private pubService = inject(PublicationsService);
   private commentsService = inject(CommentsService);
-  public location = inject(Location); // Para el botón "Volver"
+  public location = inject(Location); 
 
   post = signal<Publication | null>(null);
   comments = signal<Comment[]>([]);
@@ -48,12 +46,10 @@ export class PostDetail implements OnInit {
           if (!id) throw new Error('No ID');
           
           this.isLoading.set(true);
-          // 1. Carga la publicación
           return this.pubService.getPublicationsById(id);
         }),
         switchMap((publication) => {
           this.post.set(publication);
-          // 2. Carga la PÁGINA 1 de comentarios [cite: 105]
           return this.commentsService.getComments(publication._id, 1, 10);
         })
       )
@@ -65,14 +61,12 @@ export class PostDetail implements OnInit {
       });
   }
 
-  // Consigna: "presiona un botón 'cargar más'" [cite: 105]
   loadMoreComments() {
     this.isLoadingMore.set(true);
     const nextPage = this.currentPage() + 1;
     const pubId = this.post()?._id;
 
     this.commentsService.getComments(pubId, nextPage, 10).subscribe((res) => {
-      // Consigna: "sin dejar de mostrar los anteriores" [cite: 105]
       this.comments.update(current => [...current, ...res.docs]);
       this.totalPages.set(res.totalPages);
       this.currentPage.set(nextPage);
@@ -80,7 +74,6 @@ export class PostDetail implements OnInit {
     });
   }
 
-  // Para postear un nuevo comentario
   postComment() {
     if (this.commentForm.invalid) return;
     
@@ -88,9 +81,8 @@ export class PostDetail implements OnInit {
     const pubId = this.post()?._id;
 
     this.commentsService.postComment(pubId, message).subscribe((newComment) => {
-      // Añade el nuevo comentario al PRINCIPIO de la lista
       this.comments.update(current => [newComment, ...current]);
-      this.commentForm.reset(); // Limpia el formulario
+      this.commentForm.reset(); 
     });
   }
 }

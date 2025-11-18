@@ -1,18 +1,21 @@
 <app-navbar />
+
 <main class="mx-auto max-w-2xl px-4 py-8 pt-24 text-text">
     <button (click)="location.back()" class="mb-4 flex items-center gap-2 text-sm text-primary hover:underline">
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"
             class="h-4 w-4">
             <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
         </svg>
-        Volver a Publicaciones
+      
     </button>
 
     @if (isLoading()) {
     <div class="flex h-48 items-center justify-center">
       <div class="h-12 w-12 animate-spin rounded-full border-4 border-primary border-t-transparent"></div>
     </div>
-    } @else if (post(); as p) {
+    } 
+    
+    @else if (post(); as p) {
 
     <div class="relative flex w-full flex-col rounded-lg bg-card shadow-lg">
         <div class="flex items-center gap-3 p-4">
@@ -42,13 +45,44 @@
         <div class="mt-4 flex flex-col gap-4">
             @for (comment of comments(); track comment._id) {
             <div class="flex gap-3 rounded-lg bg-card p-4">
-                <img [src]="comment.autor.imageProfile" alt="Autor" class="h-8 w-8 rounded-full object-cover" />
+                <img [src]="comment.autor?.imageProfile" alt="Autor" class="h-8 w-8 rounded-full object-cover" />
+                
                 <div class="flex-1">
-                    <span class="font-semibold text-primary">{{ comment.autor.username }}</span>
-                    @if (comment.modificado) {
-                    <span class="ml-2 text-xs text-text/50">(editado)</span>
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <span class="font-semibold text-primary">{{ comment.autor?.username || 'Usuario eliminado' }}</span>
+                            @if (comment.modificated) {
+                                <span class="ml-2 text-xs text-text/50">(editado)</span>
+                            }
+                        </div>
+                        
+                        @if (isAuthor(comment.autor?._id) && editingCommentId() !== comment._id) {
+                            <button (click)="startEdit(comment)" class="text-xs text-muted hover:text-primary transition-colors cursor-pointer">
+                                Editar
+                            </button>
+                        }
+                    </div>
+
+                    @if (editingCommentId() !== comment._id) {
+                        <p class="mt-1 text-sm">{{ comment.message }}</p>
+                    } 
+                    
+                    @else {
+                        <div class="mt-2 animate-fade-in">
+                            <input 
+                                [formControl]="editControl" 
+                                type="text" 
+                                class="w-full rounded-lg border border-primary/50 bg-card/50 px-3 py-2 text-sm text-maintext focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary mb-2"
+                                (keyup.enter)="saveEdit(comment._id)"
+                            >
+                            <div class="flex gap-3 text-xs justify-end">
+                                <button (click)="cancelEdit()" class="text-danger hover:underline">Cancelar</button>
+                                <button (click)="saveEdit(comment._id)" class="text-primary font-bold hover:underline" [disabled]="editControl.invalid">
+                                    Guardar
+                                </button>
+                            </div>
+                        </div>
                     }
-                    <p class="mt-1 text-sm">{{ comment.message }}</p>
                 </div>
             </div>
             } @empty {
@@ -56,11 +90,12 @@
             }
         </div>
 
-        @if (currentPage() < totalPages()) { <button (click)="loadMoreComments()" [disabled]="isLoadingMore()"
+        @if (currentPage() < totalPages()) { 
+            <button (click)="loadMoreComments()" [disabled]="isLoadingMore()"
             class="mt-6 w-full rounded-lg bg-card py-2 font-semibold transition-colors hover:bg-card/80 disabled:opacity-50">
             @if (isLoadingMore()) { Cargando... } @else { Cargar más comentarios }
             </button>
-            }
+        }
     </section>
 
     } @else {

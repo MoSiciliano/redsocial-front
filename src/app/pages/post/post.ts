@@ -7,6 +7,7 @@ import { switchMap } from 'rxjs/operators';
 import { PublicationsService } from '../../services/publications.service';
 import { CommentsService } from '../../services/comments.service';
 import { NavbarComponent} from '../../components/nav/nav' 
+import { AuthService } from '../../services/auth.service';
 
 type Publication = any;
 type Comment = any;
@@ -23,6 +24,7 @@ export class PostDetail implements OnInit {
   private pubService = inject(PublicationsService);
   private commentsService = inject(CommentsService);
   public location = inject(Location); 
+  authService = inject(AuthService);  
 
   post = signal<Publication | null>(null);
   comments = signal<Comment[]>([]);
@@ -32,6 +34,8 @@ export class PostDetail implements OnInit {
   totalPages = signal(1);
   isLoading = signal(true);
   isLoadingMore = signal(false);
+  editingCommentId = signal<string | null>(null); // Guarda el ID del comentario que se edita
+  editControl = new FormControl('', [Validators.required, Validators.maxLength(500)]);
 
   // Formulario para nuevo comentario
   commentForm = new FormGroup({
@@ -66,7 +70,7 @@ export class PostDetail implements OnInit {
     const nextPage = this.currentPage() + 1;
     const pubId = this.post()?._id;
 
-    this.commentsService.getComments(pubId, nextPage, 10).subscribe((res) => {
+    this.commentsService.getComments(pubId, nextPage, 3).subscribe((res) => {
       this.comments.update(current => [...current, ...res.docs]);
       this.totalPages.set(res.totalPages);
       this.currentPage.set(nextPage);
@@ -84,5 +88,33 @@ export class PostDetail implements OnInit {
       this.comments.update(current => [newComment, ...current]);
       this.commentForm.reset(); 
     });
+  }
+  startEdit(comment: any) {
+    this.editingCommentId.set(comment._id);
+    this.editControl.setValue(comment.message);
+  }
+
+  // Cancela la edición
+  cancelEdit() {
+    this.editingCommentId.set(null);
+    this.editControl.reset();
+  }
+  saveEdit(commentId: string) {
+    if (this.editControl.invalid) return;
+    
+    const newMessage = this.editControl.value || '';
+    
+    this.commentsService.updateComment(commentId, newMessage).subscribe((updatedComment) => {
+      // Actualizamos la lista localmente para que se vea el cambio sin recargar
+      this.comments.update(current => 
+        current.map(c => c._id === commentId ? updatedComment : c)
+      );
+      this.cancelEdit(); // Salimos del modo edición
+    });
+  }
+
+  // Helper para el HTML: ¿Soy el autor de este comentario?
+  isAuthor(authorId: string): boolean {
+    return this.authService.currentUser()?._id === authorId;
   }
 }

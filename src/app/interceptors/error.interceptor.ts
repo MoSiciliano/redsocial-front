@@ -23,8 +23,6 @@ export const errorInterceptor: HttpInterceptorFn = (req: HttpRequest<any>, next:
         // Si recibimos un 401, forzamos el logout
         authService.logout();
       }
-
-      // Re-lanza el error para que el servicio que llamó también lo sepa
       return throwError(() => error);
     })
   );

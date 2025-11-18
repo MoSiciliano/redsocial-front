@@ -54,7 +54,7 @@ export class PostDetail implements OnInit {
         }),
         switchMap((publication) => {
           this.post.set(publication);
-          return this.commentsService.getComments(publication._id, 1, 10);
+          return this.commentsService.getComments(publication._id, 1, 3);
         })
       )
       .subscribe((commentsRes) => {

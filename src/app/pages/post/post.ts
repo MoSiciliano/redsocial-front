@@ -1,6 +1,6 @@
 import { Component, ChangeDetectionStrategy, inject, signal, OnInit } from '@angular/core';
 import { CommonModule, Location } from '@angular/common'; // 1. Importa Location
-import { ActivatedRoute, RouterLink } from '@angular/router'; // 2. Importa ActivatedRoute
+import { ActivatedRoute, Router, RouterLink } from '@angular/router'; // 2. Importa ActivatedRoute
 import { ReactiveFormsModule, FormGroup, FormControl, Validators } from '@angular/forms'; // 3. Para el form
 import { switchMap } from 'rxjs/operators';
 
@@ -8,6 +8,8 @@ import { PublicationsService } from '../../services/publications.service';
 import { CommentsService } from '../../services/comments.service';
 import { NavbarComponent} from '../../components/nav/nav' 
 import { AuthService } from '../../services/auth.service';
+import { Subscription } from 'rxjs';
+import { ModalService } from '../../services/modal.service';
 
 type Publication = any;
 type Comment = any;
@@ -21,8 +23,10 @@ type Comment = any;
 })
 export class PostDetail implements OnInit {
   private route = inject(ActivatedRoute);
+  private router = inject(Router);
   private pubService = inject(PublicationsService);
   private commentsService = inject(CommentsService);
+  private modalService = inject(ModalService);
   public location = inject(Location); 
   authService = inject(AuthService);  
 
@@ -37,6 +41,7 @@ export class PostDetail implements OnInit {
   editingCommentId = signal<string | null>(null); // Guarda el ID del comentario que se edita
   editControl = new FormControl('', [Validators.required, Validators.maxLength(500)]);
 
+  private modalSub: Subscription | null = null; // 7. Variable para la suscripción del modal
   // Formulario para nuevo comentario
   commentForm = new FormGroup({
     message: new FormControl('', [Validators.required, Validators.maxLength(500)]),
@@ -63,6 +68,12 @@ export class PostDetail implements OnInit {
         this.currentPage.set(1);
         this.isLoading.set(false);
       });
+  }
+  ngOnDestroy() {
+    // 8. Nos desuscribimos del modal si es necesario
+    if (this.modalSub) {
+      this.modalSub.unsubscribe();
+    }
   }
 
   loadMoreComments() {
@@ -116,5 +127,36 @@ export class PostDetail implements OnInit {
   // Helper para el HTML: ¿Soy el autor de este comentario?
   isAuthor(authorId: string): boolean {
     return this.authService.currentUser()?._id === authorId;
+  }
+  canDelete(): boolean {
+    const currentUser = this.authService.currentUser();
+    const currentPost = this.post();
+    if (!currentUser || !currentPost) return false;
+    
+    // Si es el dueño O si es admin
+    return currentUser._id === currentPost.autor._id || currentUser.profile === 'admin';
+  }
+
+  // Ejecuta el borrado con confirmación
+  deletePost() {
+    this.modalService.showConfirm(
+      'Eliminar Publicación',
+      '¿Estás seguro de que querés eliminar esta publicación? Esta acción no se puede deshacer.'
+    );
+
+    this.modalSub = this.modalService.choice$.subscribe((choice) => {
+      if (choice) {
+        const postId = this.post()?._id;
+        if (postId) {
+          this.pubService.deletePublication(postId).subscribe(() => {
+            this.modalService.show('Eliminado', 'La publicación ha sido eliminada.');
+            this.router.navigate(['/posts']); // Redirige al home
+          });
+        }
+      }
+      // Desuscribirse para evitar múltiples llamadas si el usuario vuelve a intentar
+      this.modalSub?.unsubscribe();
+      this.modalSub = null;
+    });
   }
 }

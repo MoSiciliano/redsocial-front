@@ -107,7 +107,6 @@ export class PublicationsService {
     postId: string,
     reaction: ReactionType | 'remove' // 'heart', 'rocket', 'doubt' o 'remove'
   ): Observable<Publication> {
-    // El DTO del backend espera un body: { reaction: '...' }
     const body = { reaction: reaction };
 
     return this.http
@@ -116,9 +115,20 @@ export class PublicationsService {
       })
       .pipe(catchError((err) => this.handleReactionError(err)));
   }
+  deletePublication(id: string): Observable<void> {
+    return this.http
+      .delete<void>(`${this.apiUrl}/publications/${id}`, {
+        withCredentials: true,
+      })
+      .pipe(
+        catchError((err) => {
+          this.modalService.show('Error', 'No se pudo eliminar la publicación.');
+          return throwError(() => err);
+        })
+      );
+  }
   private handleReactionError(err: any): Observable<never> {
     console.error('Error en la operación de Reacción:', err);
-    // No mostramos modal para que sea más rápido
     return throwError(() => err);
   }
 }

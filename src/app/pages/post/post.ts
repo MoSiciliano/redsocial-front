@@ -6,7 +6,7 @@ import { switchMap } from 'rxjs/operators';
 
 import { PublicationsService } from '../../services/publications.service';
 import { CommentsService } from '../../services/comments.service';
-import { NavbarComponent} from '../../components/nav/nav' 
+import { NavbarComponent } from '../../components/nav/nav';
 import { AuthService } from '../../services/auth.service';
 import { Subscription } from 'rxjs';
 import { ModalService } from '../../services/modal.service';
@@ -27,19 +27,23 @@ export class PostDetail implements OnInit {
   private pubService = inject(PublicationsService);
   private commentsService = inject(CommentsService);
   private modalService = inject(ModalService);
-  public location = inject(Location); 
-  authService = inject(AuthService);  
+  public location = inject(Location);
+  authService = inject(AuthService);
 
   post = signal<Publication | null>(null);
   comments = signal<Comment[]>([]);
-  
+
   // Señales para paginación
   currentPage = signal(1);
   totalPages = signal(1);
   isLoading = signal(true);
   isLoadingMore = signal(false);
+
+  isEditingPost = signal(false);
+  postEditControl = new FormControl('', [Validators.required, Validators.maxLength(5000)]);
+
   editingCommentId = signal<string | null>(null); // Guarda el ID del comentario que se edita
-  editControl = new FormControl('', [Validators.required, Validators.maxLength(500)]);
+  commentEditControl = new FormControl('', [Validators.required, Validators.maxLength(500)]);
 
   private modalSub: Subscription | null = null; // 7. Variable para la suscripción del modal
   // Formulario para nuevo comentario
@@ -53,7 +57,7 @@ export class PostDetail implements OnInit {
         switchMap((params) => {
           const id = params.get('id');
           if (!id) throw new Error('No ID');
-          
+
           this.isLoading.set(true);
           return this.pubService.getPublicationById(id);
         }),
@@ -82,7 +86,7 @@ export class PostDetail implements OnInit {
     const pubId = this.post()?._id;
 
     this.commentsService.getComments(pubId, nextPage, 3).subscribe((res) => {
-      this.comments.update(current => [...current, ...res.docs]);
+      this.comments.update((current) => [...current, ...res.docs]);
       this.totalPages.set(res.totalPages);
       this.currentPage.set(nextPage);
       this.isLoadingMore.set(false);
@@ -91,53 +95,83 @@ export class PostDetail implements OnInit {
 
   postComment() {
     if (this.commentForm.invalid) return;
-    
+
     const message = this.commentForm.value.message || '';
     const pubId = this.post()?._id;
 
     this.commentsService.postComment(pubId, message).subscribe((newComment) => {
-      this.comments.update(current => [newComment, ...current]);
-      this.commentForm.reset(); 
+      this.comments.update((current) => [newComment, ...current]);
+      this.commentForm.reset();
     });
   }
-  startEdit(comment: any) {
-    this.editingCommentId.set(comment._id);
-    this.editControl.setValue(comment.message);
+
+  startEditPost() {
+    const currentPost = this.post();
+    if (currentPost) {
+      this.isEditingPost.set(currentPost._id);
+      this.postEditControl.setValue(currentPost.message);
+    }
   }
 
-  // Cancela la edición
+  cancelEditPost() {
+    this.isEditingPost.set(false);
+    this.postEditControl.reset();
+  }
+
+  saveEditPost() {
+    if (this.postEditControl.invalid) return;
+
+    const newMessage = this.postEditControl.value || '';
+    const post = this.post();
+    if (post) {
+      this.pubService.updatePublication(post._id, newMessage).subscribe((updatedPost) => {
+        this.post.set(updatedPost);
+        this.cancelEditPost();
+      });
+    }
+  }
+
+  startEdit(comment: any) {
+    this.editingCommentId.set(comment._id);
+    this.commentEditControl.setValue(comment.message);
+  }
+
   cancelEdit() {
     this.editingCommentId.set(null);
-    this.editControl.reset();
+    this.commentEditControl.reset();
   }
   saveEdit(commentId: string) {
-    if (this.editControl.invalid) return;
-    
-    const newMessage = this.editControl.value || '';
-    
+    if (this.commentEditControl.invalid) return;
+
+    const newMessage = this.commentEditControl.value || '';
+
     this.commentsService.updateComment(commentId, newMessage).subscribe((updatedComment) => {
       // Actualizamos la lista localmente para que se vea el cambio sin recargar
-      this.comments.update(current => 
-        current.map(c => c._id === commentId ? updatedComment : c)
+      this.comments.update((current) =>
+        current.map((c) => (c._id === commentId ? updatedComment : c))
       );
       this.cancelEdit(); // Salimos del modo edición
     });
   }
 
-  // Helper para el HTML: ¿Soy el autor de este comentario?
   isAuthor(authorId: string): boolean {
     return this.authService.currentUser()?._id === authorId;
   }
+
   canDelete(): boolean {
     const currentUser = this.authService.currentUser();
     const currentPost = this.post();
     if (!currentUser || !currentPost) return false;
-    
+
     // Si es el dueño O si es admin
     return currentUser._id === currentPost.autor._id || currentUser.profile === 'admin';
   }
+  isPostOwner(): boolean {
+    const currentUser = this.authService.currentUser();
+    const currentPost = this.post();
+    return currentUser?._id === currentPost?.autor._id;
+  }
 
-  // Ejecuta el borrado con confirmación
   deletePost() {
     this.modalService.showConfirm(
       'Eliminar Publicación',

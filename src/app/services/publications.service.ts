@@ -82,6 +82,7 @@ export class PublicationsService {
         })
       );
   }
+
   getPublicationById(pubId: string): Observable<Publication> {
     return this.http
       .get<Publication>(`${this.apiUrl}/publications/${pubId}`, {
@@ -98,11 +99,28 @@ export class PublicationsService {
         } )
       );
   }
+
+  updatePublication(id: string, message: string): Observable<Publication> {
+      return this.http.patch<Publication>(`${this.apiUrl}/publications/${id}`, { message }, {
+        withCredentials: true,
+      }).pipe(
+        catchError((err) => {
+          console.error('Error al actualizar la publicación:', err);
+          this.modalService.show(
+            'Error al actualizar publicación',
+            'No se pudo actualizar la publicación.'
+          );
+          return throwError(() => err);
+        })
+      );
+  }  
+
   changeSort(newSort: SortByType) {
     if (this.currentSort() === newSort) return; // Si es el mismo, no hace nada
 
     this.currentSort.set(newSort);
   }
+
   reactToPost(
     postId: string,
     reaction: ReactionType | 'remove' // 'heart', 'rocket', 'doubt' o 'remove'
@@ -115,6 +133,7 @@ export class PublicationsService {
       })
       .pipe(catchError((err) => this.handleReactionError(err)));
   }
+
   deletePublication(id: string): Observable<void> {
     return this.http
       .delete<void>(`${this.apiUrl}/publications/${id}`, {
@@ -127,6 +146,7 @@ export class PublicationsService {
         })
       );
   }
+  
   private handleReactionError(err: any): Observable<never> {
     console.error('Error en la operación de Reacción:', err);
     return throwError(() => err);

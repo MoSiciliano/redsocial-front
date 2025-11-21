@@ -106,7 +106,7 @@
                         </div>
                         
                         <!-- Editar comentario -->
-                        @if (isAuthor(comment.autor?._id) && editingCommentId() !== comment._id) {
+                        @if (isAuthor(comment.autor?._id) && editingCommentId() !== comment._id && isCommentEditable(comment.createdAt)) {
                             <button (click)="startEdit(comment)" class="text-xs text-muted hover:text-primary transition-colors cursor-pointer">
                                 Editar
                             </button>

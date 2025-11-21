@@ -126,6 +126,7 @@ export class AuthService {
       })
     );
   }
+
   refreshSession(): Observable<any> {
     return this.http.post(`${this.apiUrl}/auth/refresh`, {}).pipe(
       tap(() => {
@@ -148,7 +149,8 @@ export class AuthService {
     const modalTimerSub = timer(600000).subscribe(() => {
       this.modalService.showConfirm(
         'Sesión por expirar',
-        'Tu sesión vence en 5 minutos. Refrescando automáticamente...'
+        'Tu sesión vence en 5 minutos. Refrescando automáticamente...',
+        'Extender Sesión'
       );
       this.modalSubscription = this.modalService.choice$.subscribe(choice => {
         if (choice) {

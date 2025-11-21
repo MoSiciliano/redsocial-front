@@ -158,6 +158,20 @@ export class PostDetail implements OnInit {
     return this.authService.currentUser()?._id === authorId;
   }
 
+  isCommentEditable(dateString: string): boolean {
+    if (!dateString) return false;
+
+    const createdDate = new Date(dateString);
+    const now = new Date();
+
+    // Diferencia en milisegundos
+    const diffInMs = now.getTime() - createdDate.getTime();
+
+    // 1 hora = 60 minutos * 60 segundos * 1000 milisegundos
+    const oneHourInMs = 1000 * 60 * 60;
+
+    return diffInMs < oneHourInMs;
+  }
   canDelete(): boolean {
     const currentUser = this.authService.currentUser();
     const currentPost = this.post();
@@ -175,7 +189,8 @@ export class PostDetail implements OnInit {
   deletePost() {
     this.modalService.showConfirm(
       'Eliminar Publicación',
-      '¿Estás seguro de que querés eliminar esta publicación? Esta acción no se puede deshacer.'
+      '¿Estás seguro de que querés eliminar esta publicación? Esta acción no se puede deshacer.',
+      'Eliminar'
     );
 
     this.modalSub = this.modalService.choice$.subscribe((choice) => {

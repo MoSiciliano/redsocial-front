@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnInit, ViewChildren, QueryList } from '@angular/core'; // <--- 1. IMPORTAR ViewChildren y QueryList
 import { ModalService } from '../../services/modal.service';
 import { environment } from '../../../enviroments/enviroment.prod';
 import { ChartConfiguration, ChartOptions } from 'chart.js';
@@ -8,24 +8,30 @@ import { BaseChartDirective } from 'ng2-charts';
 
 @Component({
   selector: 'app-dashboard',
+  standalone: true, // Asegúrate de que sea standalone
   imports: [CommonModule, BaseChartDirective],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.css',
 })
-export class Dashboard {
+export class Dashboard implements OnInit {
   private http = inject(HttpClient);
   private modalService = inject(ModalService);  
+
+  // 2. AGREGAR ESTO: Nos permite controlar los gráficos desde el código
+  @ViewChildren(BaseChartDirective) charts!: QueryList<BaseChartDirective>;
 
   apiUrl = environment.apiUrl;
   users: any[] = [];
   totalComments: number = 0;
-public barChartData: ChartConfiguration<'bar'>['data'] = {
+
+  // --- Configuración Barras ---
+  public barChartData: ChartConfiguration<'bar'>['data'] = {
     labels: [],
     datasets: [{ data: [], label: 'Posts Publicados', backgroundColor: '#42A5F5' }]
   };
   public barChartOptions: ChartOptions<'bar'> = { 
     responsive: true,
-    maintainAspectRatio: false // Para que se adapte mejor al div
+    maintainAspectRatio: false 
   };
 
   // --- Configuración Torta ---
@@ -54,6 +60,7 @@ public barChartData: ChartConfiguration<'bar'>['data'] = {
     this.http.get<any>(`${this.apiUrl}/dashboard/statistics`).subscribe({
       next: (data) => {
         console.log('🔥 DATOS RECIBIDOS DEL BACKEND:', data);
+        
         // 1. Gráfico de Barras
         this.barChartData = {
           labels: data.postsByUser.map((u: any) => u.username),
@@ -68,12 +75,22 @@ public barChartData: ChartConfiguration<'bar'>['data'] = {
         this.totalComments = data.totalComments;
 
         // 3. Gráfico de Torta
-        if(data.commentsByPost) {
-           this.pieChartData = {
-            labels: data.commentsByPost.map((p: any) => p.postMessage ),
-            datasets: [{ data: data.commentsByPost.map((p: any) => p.count) }]
-          };
-        }
+        // Validamos si hay datos para evitar errores
+        const comments = data.commentsByPost || [];
+        
+        this.pieChartData = {
+          // 3. CORRECCIÓN IMPORTANTE: Usar 'postTitle' en lugar de 'postMessage'
+          labels: comments.map((p: any) => p.postTitle || 'Sin Título'), 
+          datasets: [{ 
+            data: comments.map((p: any) => p.count) 
+          }]
+        };
+
+        // 4. CORRECCIÓN CRÍTICA: Forzar a los gráficos a actualizarse
+        // Esto le dice a Angular: "¡Oye, los datos cambiaron, repinta el canvas!"
+        this.charts?.forEach((child) => {
+          child.update();
+        });
       },
       error: (e) => console.error('Error stats:', e)
     });

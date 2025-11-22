@@ -104,3 +104,26 @@ button:hover {
   background: linear-gradient(45deg, #03dac6, #018786);
   color: #000; /* Texto negro para mejor contraste en teal */
 }
+/* Estilos para el formulario */
+.btn-primary {
+  background: linear-gradient(45deg, #6200ea, #3700b3);
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 15px;
+}
+
+input, select {
+  padding: 10px;
+  border-radius: 5px;
+  border: 1px solid #444;
+  background-color: #2a2a2a;
+  color: white;
+}
+
+input:focus, select:focus {
+  outline: none;
+  border-color: #7c4dff;
+}

@@ -12,17 +12,28 @@
       <h3>Comentarios (Total: {{ totalComments }})</h3>
       <div class="chart-wrapper">
         @if (totalComments > 0) {
-          <canvas baseChart [data]="pieChartData" [options]="pieChartOptions" [type]="'pie'"></canvas>
+        <canvas baseChart [data]="pieChartData" [options]="pieChartOptions" [type]="'pie'"></canvas>
         } @else {
-          <div style="display:flex; align-items:center; justify-content:center; height:100%; color:gray;">
-            <p>No hay comentarios para mostrar.</p>
-          </div>
+        <div
+          style="
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            color: gray;
+          "
+        >
+          <p>No hay comentarios para mostrar.</p>
+        </div>
         }
       </div>
     </div>
   </div>
 
-  <div class="users-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+  <div
+    class="users-header"
+    style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px"
+  >
     <h2>Gestión de Usuarios</h2>
     <button class="btn-primary" (click)="showCreateForm = !showCreateForm">
       {{ showCreateForm ? 'Cancelar' : '+ Nuevo Usuario' }}
@@ -30,25 +41,51 @@
   </div>
 
   @if (showCreateForm) {
-    <div class="create-user-form chart-card" style="margin-bottom: 20px;">
-      <h3>Crear Nuevo Usuario</h3>
-      <div class="form-grid">
-        <input [(ngModel)]="newUser.name" placeholder="Nombre" type="text">
-        <input [(ngModel)]="newUser.lastname" placeholder="Apellido" type="text">
-        <input [(ngModel)]="newUser.username" placeholder="Usuario" type="text">
-        <input [(ngModel)]="newUser.email" placeholder="Email" type="email">
-        <input [(ngModel)]="newUser.password" placeholder="Contraseña" type="password">
-        <input [(ngModel)]="newUser.birthdate" type="date">
-        
-        <select [(ngModel)]="newUser.profile">
+  <div class="create-user-form chart-card" style="margin-bottom: 20px">
+    <h3>Crear Nuevo Usuario</h3>
+
+    <div class="form-container">
+      <div class="form-group">
+        <label>Nombre:</label>
+        <input [(ngModel)]="newUser.name" placeholder="Ej: Juan" type="text" />
+      </div>
+      <div class="form-group">
+        <label>Apellido:</label>
+        <input [(ngModel)]="newUser.lastname" placeholder="Ej: Perez" type="text" />
+      </div>
+
+      <div class="form-group">
+        <label>Usuario:</label>
+        <input [(ngModel)]="newUser.username" placeholder="Ej: juanperez90" type="text" />
+      </div>
+      <div class="form-group">
+        <label>Email:</label>
+        <input [(ngModel)]="newUser.email" placeholder="nombre@ejemplo.com" type="email" />
+      </div>
+
+      <div class="form-group">
+        <label>Contraseña:</label>
+        <input [(ngModel)]="newUser.password" placeholder="******" type="password" />
+      </div>
+      <div class="form-group">
+        <label>Fecha de Nacimiento:</label>
+        <input [(ngModel)]="newUser.birthdate" type="date" />
+      </div>
+
+      <div class="form-group full-width">
+        <label>Rol del Usuario:</label>
+        <select [(ngModel)]="newUser.profile" class="role-select">
           <option value="user">Usuario Normal</option>
           <option value="admin">Administrador</option>
         </select>
       </div>
-      <button class="btn-success" style="margin-top: 15px; width: 100%;" (click)="createUser()">Guardar Usuario</button>
     </div>
+    <div class="form-actions">
+      <button class="btn-secondary" (click)="showCreateForm = false">Cancelar</button>
+      <button class="btn-success save-btn" (click)="createUser()">Guardar Usuario</button>
+    </div>
+  </div>
   }
-
   <div class="table-responsive">
     <table>
       <thead>
@@ -62,29 +99,34 @@
       </thead>
       <tbody>
         @for (user of users; track user._id) {
-          <tr>
-            <td>{{ user.username }}</td>
-            <td>{{ user.email }}</td>
-            <td>
-                <span [style.color]="user.profile === 'admin' ? '#b388ff' : 'inherit'">
-                    {{ user.profile | uppercase }}
-                </span>
-            </td>
-            <td [style.color]="user.isActive ? '#03dac6' : '#cf6679'">
-              <strong>{{ user.isActive ? 'ACTIVO' : 'BAJA' }}</strong>
-            </td>
-            <td>
-              @if (user.profile !== 'admin') {
-                <button (click)="toggleUserStatus(user)" [class]="user.isActive ? 'btn-danger' : 'btn-success'">
-                  {{ user.isActive ? 'Deshabilitar' : 'Habilitar' }}
-                </button>
-              } @else {
-                <span style="color: gray; font-size: 0.8em;">No editable</span>
-              }
-            </td>
-          </tr>
+        <tr>
+          <td>{{ user.username }}</td>
+          <td>{{ user.email }}</td>
+          <td>
+            <span [style.color]="user.profile === 'admin' ? '#b388ff' : 'inherit'">
+              {{ user.profile | uppercase }}
+            </span>
+          </td>
+          <td [style.color]="user.isActive ? '#03dac6' : '#cf6679'">
+            <strong>{{ user.isActive ? 'ACTIVO' : 'BAJA' }}</strong>
+          </td>
+          <td>
+            @if (user.profile !== 'admin') {
+            <button
+              (click)="toggleUserStatus(user)"
+              [class]="user.isActive ? 'btn-danger' : 'btn-success'"
+            >
+              {{ user.isActive ? 'Deshabilitar' : 'Habilitar' }}
+            </button>
+            } @else {
+            <span style="color: gray; font-size: 0.8em">No editable</span>
+            }
+          </td>
+        </tr>
         } @empty {
-          <tr><td colspan="5">No se encontraron usuarios.</td></tr>
+        <tr>
+          <td colspan="5">No se encontraron usuarios.</td>
+        </tr>
         }
       </tbody>
     </table>

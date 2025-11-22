@@ -104,26 +104,87 @@ button:hover {
   background: linear-gradient(45deg, #3e4aeb, #2b1a77);
   color: #000; /* Texto negro para mejor contraste en teal */
 }
-/* Estilos para el formulario */
-.btn-primary {
-  background: linear-gradient(45deg, #6200ea, #3700b3);
+/* ... tus estilos anteriores ... */
+
+/* --- ESTILOS DEL FORMULARIO DE CREACIÓN --- */
+
+.form-container {
+  display: grid;
+  /* Crea dos columnas que ocupan espacio igual */
+  grid-template-columns: 1fr 1fr; 
+  gap: 20px; /* Espacio entre campos */
+  margin-bottom: 25px;
 }
 
-.form-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 15px;
+/* Para pantallas pequeñas (celulares), usamos una sola columna */
+@media (max-width: 768px) {
+  .form-container {
+    grid-template-columns: 1fr;
+  }
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Hacemos que el selector de rol ocupe todo el ancho */
+.form-group.full-width {
+  grid-column: 1 / -1;
+}
+
+label {
+  font-size: 0.9rem;
+  color: #b388ff; /* Color violeta claro para las etiquetas */
+  margin-bottom: 8px;
+  font-weight: 500;
 }
 
 input, select {
-  padding: 10px;
-  border-radius: 5px;
+  padding: 12px;
+  border-radius: 8px;
   border: 1px solid #444;
-  background-color: #2a2a2a;
+  background-color: #2a2a2a; /* Fondo oscuro */
   color: white;
+  font-size: 1rem;
+  width: 100%; /* Ocupar todo el ancho del contenedor */
+  box-sizing: border-box; /* Evita que el padding rompa el ancho */
+  transition: border-color 0.3s;
 }
 
 input:focus, select:focus {
   outline: none;
-  border-color: #7c4dff;
+  border-color: #7c4dff; /* Borde violeta al hacer foco */
+  box-shadow: 0 0 0 2px rgba(124, 77, 255, 0.2);
+}
+
+/* Estilo especial para el selector de rol */
+.role-select {
+  cursor: pointer;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23b388ff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  background-size: 16px;
+  appearance: none; /* Quitamos la flecha por defecto del navegador */
+}
+
+/* --- BOTONES DEL FORMULARIO --- */
+.form-actions {
+  display: flex;
+  justify-content: flex-end; /* Botones a la derecha */
+  gap: 15px;
+}
+
+.save-btn {
+  padding: 10px 30px; /* Botón de guardar más grande */
+  font-size: 1rem;
+}
+
+.btn-secondary {
+  background: transparent;
+  border: 1px solid #7c4dff;
+  color: #7c4dff;
+}
+.btn-secondary:hover {
+  background: rgba(124, 77, 255, 0.1);
 }

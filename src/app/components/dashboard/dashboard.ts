@@ -1,6 +1,13 @@
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
-import { Component, inject, OnInit, ViewChildren, QueryList } from '@angular/core'; // <--- 1. IMPORTAR ViewChildren y QueryList
+import {
+  Component,
+  inject,
+  OnInit,
+  ViewChildren,
+  QueryList,
+  ChangeDetectorRef,
+} from '@angular/core'; // <--- 1. IMPORTAR ViewChildren y QueryList
 import { ModalService } from '../../services/modal.service';
 import { environment } from '../../../enviroments/enviroment.prod';
 import { ChartConfiguration, ChartOptions } from 'chart.js';
@@ -15,7 +22,7 @@ import { BaseChartDirective } from 'ng2-charts';
 })
 export class Dashboard implements OnInit {
   private http = inject(HttpClient);
-  private modalService = inject(ModalService);
+  private cdr = inject(ChangeDetectorRef);
 
   // 2. AGREGAR ESTO: Nos permite controlar los gráficos desde el código
   @ViewChildren(BaseChartDirective) charts!: QueryList<BaseChartDirective>;
@@ -40,6 +47,7 @@ export class Dashboard implements OnInit {
   public barChartOptions: ChartOptions<'bar'> = {
     responsive: true,
     maintainAspectRatio: false,
+    resizeDelay: 200,
     scales: {
       y: { beginAtZero: true, ticks: { stepSize: 1 } },
     },
@@ -62,7 +70,10 @@ export class Dashboard implements OnInit {
 
   loadUsers() {
     this.http.get<any[]>(`${this.apiUrl}/users`).subscribe({
-      next: (data) => (this.users = data),
+      next: (data) => {
+        this.users = data;
+        this.cdr.detectChanges();
+      },
       error: (e) => console.error('Error usuarios:', e),
     });
   }
@@ -104,11 +115,14 @@ export class Dashboard implements OnInit {
           ],
         };
 
-        // 4. CORRECCIÓN CRÍTICA: Forzar a los gráficos a actualizarse
-        // Esto le dice a Angular: "¡Oye, los datos cambiaron, repinta el canvas!"
-        this.charts?.forEach((child) => {
-          child.update();
-        });
+        this.cdr.detectChanges(); // <--- Actualiza el HTML
+
+        // Dar un respiro al navegador para que calcule el CSS antes de pintar el canvas
+        setTimeout(() => {
+          this.charts?.forEach((child) => {
+            child.update();
+          });
+        }, 200);
       },
       error: (e) => console.error('Error stats:', e),
     });
@@ -122,7 +136,10 @@ export class Dashboard implements OnInit {
     const action = user.isActive ? this.http.delete(endpoint) : this.http.post(endpoint, {});
 
     action.subscribe({
-      next: () => (user.isActive = !user.isActive),
+      next: () => {
+        user.isActive = !user.isActive;
+        this.cdr.detectChanges();
+      },
       error: () => alert('No tenés permisos para hacer esto.'),
     });
   }

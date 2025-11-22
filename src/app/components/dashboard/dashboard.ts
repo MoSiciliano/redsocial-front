@@ -15,7 +15,7 @@ import { BaseChartDirective } from 'ng2-charts';
 })
 export class Dashboard implements OnInit {
   private http = inject(HttpClient);
-  private modalService = inject(ModalService);  
+  private modalService = inject(ModalService);
 
   // 2. AGREGAR ESTO: Nos permite controlar los gráficos desde el código
   @ViewChildren(BaseChartDirective) charts!: QueryList<BaseChartDirective>;
@@ -27,21 +27,32 @@ export class Dashboard implements OnInit {
   // --- Configuración Barras ---
   public barChartData: ChartConfiguration<'bar'>['data'] = {
     labels: [],
-    datasets: [{ data: [], label: 'Posts Publicados', backgroundColor: '#42A5F5' }]
+    datasets: [
+      {
+        data: [],
+        label: 'Posts Publicados',
+        backgroundColor: '#42A5F5',
+        barPercentage: 0.5,
+        categoryPercentage: 0.8,
+      },
+    ],
   };
-  public barChartOptions: ChartOptions<'bar'> = { 
+  public barChartOptions: ChartOptions<'bar'> = {
     responsive: true,
-    maintainAspectRatio: false 
+    maintainAspectRatio: false,
+    scales: {
+      y: { beginAtZero: true, ticks: { stepSize: 1 } },
+    },
   };
 
   // --- Configuración Torta ---
   public pieChartData: ChartConfiguration<'pie'>['data'] = {
     labels: [],
-    datasets: [{ data: [] }]
+    datasets: [{ data: [] }],
   };
-  public pieChartOptions: ChartOptions<'pie'> = { 
+  public pieChartOptions: ChartOptions<'pie'> = {
     responsive: true,
-    maintainAspectRatio: false 
+    maintainAspectRatio: false,
   };
 
   ngOnInit() {
@@ -51,8 +62,8 @@ export class Dashboard implements OnInit {
 
   loadUsers() {
     this.http.get<any[]>(`${this.apiUrl}/users`).subscribe({
-      next: (data) => this.users = data,
-      error: (e) => console.error('Error usuarios:', e)
+      next: (data) => (this.users = data),
+      error: (e) => console.error('Error usuarios:', e),
     });
   }
 
@@ -60,15 +71,19 @@ export class Dashboard implements OnInit {
     this.http.get<any>(`${this.apiUrl}/dashboard/statistics`).subscribe({
       next: (data) => {
         console.log('🔥 DATOS RECIBIDOS DEL BACKEND:', data);
-        
+
         // 1. Gráfico de Barras
         this.barChartData = {
           labels: data.postsByUser.map((u: any) => u.username),
-          datasets: [{ 
-            data: data.postsByUser.map((u: any) => u.count), 
-            label: 'Cantidad de Posts',
-            backgroundColor: '#42A5F5'
-          }]
+          datasets: [
+            {
+              data: data.postsByUser.map((u: any) => u.count),
+              label: 'Cantidad de Posts',
+              backgroundColor: '#42A5F5',
+              barPercentage: 0.5,
+              categoryPercentage: 0.8,
+            },
+          ],
         };
 
         // 2. Total simple
@@ -77,13 +92,16 @@ export class Dashboard implements OnInit {
         // 3. Gráfico de Torta
         // Validamos si hay datos para evitar errores
         const comments = data.commentsByPost || [];
-        
+
         this.pieChartData = {
           // 3. CORRECCIÓN IMPORTANTE: Usar 'postTitle' en lugar de 'postMessage'
-          labels: comments.map((p: any) => p.postTitle || 'Sin Título'), 
-          datasets: [{ 
-            data: comments.map((p: any) => p.count) 
-          }]
+          labels: comments.map((p: any) => p.postTitle || 'Sin Título'),
+          datasets: [
+            {
+              data: comments.length ? comments.map((p: any) => p.count) : [0],
+              backgroundColor: comments.length ? undefined : ['#e0e0e0'],
+            },
+          ],
         };
 
         // 4. CORRECCIÓN CRÍTICA: Forzar a los gráficos a actualizarse
@@ -92,20 +110,20 @@ export class Dashboard implements OnInit {
           child.update();
         });
       },
-      error: (e) => console.error('Error stats:', e)
+      error: (e) => console.error('Error stats:', e),
     });
   }
 
   toggleUserStatus(user: any) {
-    const endpoint = user.isActive 
-      ? `${this.apiUrl}/users/${user._id}` 
+    const endpoint = user.isActive
+      ? `${this.apiUrl}/users/${user._id}`
       : `${this.apiUrl}/users/${user._id}/restore`;
 
     const action = user.isActive ? this.http.delete(endpoint) : this.http.post(endpoint, {});
 
     action.subscribe({
-      next: () => user.isActive = !user.isActive,
-      error: () => alert('No tenés permisos para hacer esto.')
+      next: () => (user.isActive = !user.isActive),
+      error: () => alert('No tenés permisos para hacer esto.'),
     });
   }
 }

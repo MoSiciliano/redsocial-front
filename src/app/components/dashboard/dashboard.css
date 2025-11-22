@@ -97,11 +97,11 @@ button:hover {
 }
 
 .btn-danger {
-  background: linear-gradient(45deg, #cf6679, #b00020);
+  background: linear-gradient(45deg, #b388ff, #7847ce);
 }
 
 .btn-success {
-  background: linear-gradient(45deg, #03dac6, #018786);
+  background: linear-gradient(45deg, #3e4aeb, #2b1a77);
   color: #000; /* Texto negro para mejor contraste en teal */
 }
 /* Estilos para el formulario */

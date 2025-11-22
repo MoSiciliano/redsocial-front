@@ -9,6 +9,7 @@ import {
 import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { Credentials } from '../../models/credentials';
+import { ModalService } from '../../services/modal.service';
 
 @Component({
   selector: 'app-login',
@@ -20,6 +21,7 @@ import { Credentials } from '../../models/credentials';
 export class Login{
   authService = inject(AuthService);
   router = inject(Router);
+  modalService = inject(ModalService);
 
   loginForm = new FormGroup({
     identifier: new FormControl('', [Validators.required]),
@@ -34,10 +36,18 @@ export class Login{
 
     this.authService
       .login(this.loginForm.value as Credentials)
-      .subscribe(() => {
-        console.log("entraste");
-        
-        this.router.navigate(['/posts']);
+      .subscribe({
+        next: (res: any) => {
+          const rol = res.user.profile;
+          if (rol === 'admin') {
+            this.router.navigate(['/dashboard']);
+          } else {
+            this.router.navigate(['/posts']);
+          }
+        },
+        error: (err) => {
+          this.modalService.showConfirm('Error', 'Usuario o contraseña incorrectos.');
+        }
       });
   }
 }

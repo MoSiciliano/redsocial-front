@@ -1,5 +1,6 @@
 import { Routes } from '@angular/router';
 import { authGuard } from './guards/auth-guard';
+import { adminGuard } from './guards/admin-guard';
 
 export const routes: Routes = [
   // Rutas públicas
@@ -30,6 +31,11 @@ export const routes: Routes = [
     canActivate: [authGuard],
   },
 
+  {
+    path: 'dashboard',
+    loadComponent: () => import('./components/dashboard/dashboard').then(m => m.Dashboard),
+    canActivate: [adminGuard] // <--- ¡Candado de seguridad! Solo admins
+  },
   // Redirecciones
   { path: '', redirectTo: 'login', pathMatch: 'full' },
   { path: '**', redirectTo: 'posts' }, // O una página 404

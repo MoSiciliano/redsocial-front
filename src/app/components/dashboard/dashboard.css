@@ -188,3 +188,46 @@ input:focus, select:focus {
 .btn-secondary:hover {
   background: rgba(124, 77, 255, 0.1);
 }
+
+/* Estilos para la sección de filtros */
+.filters-card {
+    min-height: auto; /* Sobrescribe el min-height de 400px de chart-card */
+    margin-bottom: 20px;
+}
+
+.filters-row {
+    display: flex;
+    gap: 20px;
+    align-items: flex-end; /* Alinea botones con los inputs */
+    flex-wrap: wrap;
+}
+
+.filters-actions {
+    display: flex;
+    gap: 10px;
+}
+
+/* Ajuste para inputs de fecha */
+input[type="date"] {
+    padding: 10px;
+    background-color: #2a2a2a;
+    color: white;
+    border: 1px solid #444;
+    border-radius: 5px;
+    color-scheme: dark; /* Icono de calendario blanco */
+}
+
+.btn-primary {
+    background: linear-gradient(45deg, #6200ea, #3700b3);
+    color: white;
+}
+
+.btn-secondary {
+    background: transparent;
+    border: 1px solid #7c4dff;
+    color: #7c4dff;
+}
+
+.btn-secondary:hover {
+    background: rgba(124, 77, 255, 0.1);
+}

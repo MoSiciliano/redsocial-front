@@ -53,6 +53,7 @@ public barChartData: ChartConfiguration<'bar'>['data'] = {
   loadStats() {
     this.http.get<any>(`${this.apiUrl}/dashboard/statistics`).subscribe({
       next: (data) => {
+        console.log('🔥 DATOS RECIBIDOS DEL BACKEND:', data);
         // 1. Gráfico de Barras
         this.barChartData = {
           labels: data.postsByUser.map((u: any) => u.username),
@@ -69,7 +70,7 @@ public barChartData: ChartConfiguration<'bar'>['data'] = {
         // 3. Gráfico de Torta
         if(data.commentsByPost) {
            this.pieChartData = {
-            labels: data.commentsByPost.map((p: any) => p.postTitle || 'Sin Título'),
+            labels: data.commentsByPost.map((p: any) => p.postMessage ),
             datasets: [{ data: data.commentsByPost.map((p: any) => p.count) }]
           };
         }

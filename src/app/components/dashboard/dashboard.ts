@@ -36,6 +36,11 @@ export class Dashboard implements OnInit {
   private chartTextColor = '#e0e0e0';
   private chartGridColor = 'rgba(255, 255, 255, 0.1)';
 
+  filters = {
+    from: '',
+    to: '',
+  };
+
   showCreateForm = false; // Para mostrar/ocultar el formulario
   newUser: any = {
     name: '',
@@ -139,14 +144,27 @@ export class Dashboard implements OnInit {
         this.users = data;
         this.cdr.detectChanges();
       },
-      error: (e) => console.error('❌ Error cargando usuarios:', e),
+      error: (e) => console.error('Error cargando usuarios:', e),
     });
   }
 
   loadStats() {
-    this.http.get<any>(`${this.apiUrl}/dashboard/statistics`).subscribe({
+    let url = `${this.apiUrl}/dashboard/statistics`;
+
+    // Construir Query Params
+    const params: string[] = [];
+    if (this.filters.from) params.push(`from=${this.filters.from}`);
+    if (this.filters.to) params.push(`to=${this.filters.to}`);
+
+    if (params.length > 0) {
+      url += `?${params.join('&')}`;
+    }
+
+    console.log('Consultando estadísticas:', url);
+
+    this.http.get<any>(url).subscribe({
       next: (data) => {
-        console.log('🔥 Stats recibidas:', data);
+        console.log('Stats recibidas:', data);
 
         // --- ACTUALIZAR BARRAS ---
         this.barChartData = {
@@ -165,10 +183,9 @@ export class Dashboard implements OnInit {
 
         this.totalComments = data.totalComments;
 
-        // --- ACTUALIZAR TORTA (Aquí está el cambio de etiqueta) ---
+        // --- ACTUALIZAR TORTA ---
         const comments = data.commentsByPost || [];
         this.pieChartData = {
-          // AQUI: Agregamos 'Post: ' para que se entienda que es el título del post
           labels: comments.length
             ? comments.map((p: any) => `Post: "${p.postTitle}"`)
             : ['Sin Datos'],
@@ -177,7 +194,7 @@ export class Dashboard implements OnInit {
               data: comments.length ? comments.map((p: any) => p.count) : [1],
               backgroundColor: comments.length
                 ? ['#6200ea', '#03dac6', '#ff4081', '#7c4dff', '#cf6679']
-                : ['#424242'], // Gris si está vacío
+                : ['#424242'],
               borderColor: '#1e1e1e',
               borderWidth: 2,
             },
@@ -186,17 +203,22 @@ export class Dashboard implements OnInit {
 
         this.cdr.detectChanges();
 
-        // Pequeño delay para asegurar que el CSS de Tailwind cargó
         setTimeout(() => {
           this.charts?.forEach((child) => {
             child.update();
           });
         }, 200);
       },
-      error: (e) => console.error('❌ Error stats:', e),
+      error: (e) => console.error('Error stats:', e),
     });
   }
-
+  applyFilters() {
+    this.loadStats();
+  }
+  clearFilters(){
+    this.filters = {from : '', to: ''};
+    this.loadStats()
+  }
   createUser() {
     if (!this.newUser.name || !this.newUser.email || !this.newUser.password) {
       return this.modalService.showConfirm('Error', 'Todos los campos son obligatorios');

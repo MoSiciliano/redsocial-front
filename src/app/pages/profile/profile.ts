@@ -5,13 +5,13 @@ import { PublicationsService } from '../../services/publications.service'; // <-
 import { Publication, ReactionType } from '../../models/publication'; // <-- 3. Importa el modelo
 import { NavbarComponent } from '../../components/nav/nav';
 import { UsersService } from '../../services/users.service';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 import { ImgFallbackDirective } from '../../directives/img.directive';
 
 @Component({
   selector: 'app-profile',
   standalone: true,
-  imports: [CommonModule, NavbarComponent, ImgFallbackDirective],
+  imports: [CommonModule, NavbarComponent, ImgFallbackDirective, RouterLink],
   templateUrl: './profile.html',
 })
 export class Profile implements OnInit {

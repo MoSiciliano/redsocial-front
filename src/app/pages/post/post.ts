@@ -104,6 +104,41 @@ export class PostDetail implements OnInit {
       this.commentForm.reset();
     });
   }
+  getUserReaction(post: any): string | null {
+    const currentUserId = this.authService.currentUser()?._id;
+    if (!currentUserId || !post) return null;
+
+    if (post.hearts?.includes(currentUserId)) return 'heart';
+    if (post.rockets?.includes(currentUserId)) return 'rocket';
+    if (post.doubts?.includes(currentUserId)) return 'doubt';
+
+    return null;
+  }
+
+  // 2. MÉTODO PARA REACCIONAR
+  onReact(reaction: 'heart' | 'rocket' | 'doubt') {
+    const currentPost = this.post();
+    if (!currentPost) return;
+
+    const currentReaction = this.getUserReaction(currentPost);
+    let reactionToSend: 'heart' | 'rocket' | 'doubt' | 'remove';
+
+    // Lógica de toggle: Si ya tengo esa reacción, la quito ('remove')
+    if (currentReaction === reaction) {
+      reactionToSend = 'remove';
+    } else {
+      reactionToSend = reaction;
+    }
+
+    // Llamada al servicio
+    this.pubService.reactToPost(currentPost._id, reactionToSend).subscribe({
+      next: (updatedPost) => {
+        // Actualizamos la señal con el post nuevo que viene del back
+        this.post.set(updatedPost);
+      },
+      error: (err) => console.error('Error al reaccionar', err),
+    });
+  }
 
   startEditPost() {
     const currentPost = this.post();

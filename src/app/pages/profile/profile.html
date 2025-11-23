@@ -1,18 +1,18 @@
 <app-navbar />
 
 <main class="container mx-auto max-w-2xl px-4 py-8">
-  @if (authService.currentUser(); as user) {
+  @if (profileUser(); as user) {
   <div class="rounded-xl border border-muted/20 bg-card/60 p-6 shadow-lg backdrop-blur-lg mb-8">
     <div class="flex flex-col sm:flex-row items-center gap-6">
 
-      <img [src]="profileUser()?.imageProfile" appImgFallback alt="Foto de perfil de {{ user.username }}"
+      <img [src]="user.imageProfile" appImgFallback alt="Foto de perfil de {{ user.username }}"
         class="h-32 w-32 rounded-full object-cover border-4 border-primary/50" />
 
       <div class="text-center sm:text-left">
         <h1 class="text-3xl font-bold text-maintext">
           {{ user.name }} {{ user.lastname }}
         </h1>
-        <div class="flex items-center gap-3">
+        <div class="flex items-center gap-3 justify-center sm:justify-start">
           <p class="text-lg text-primary">@{{ user.username }}</p>
 
           @if (!user.isActive) {
@@ -20,14 +20,6 @@
           }
         </div>
 
-        @if (authService.currentUser()?.profile === 'admin' && authService.currentUser()?._id !== user._id) {
-        <button (click)="toggleUserStatus()"
-          class="mt-2 rounded-lg px-4 py-1 text-sm font-bold text-white transition-all"
-          [class.bg-danger]="user.isActive" [class.bg-success]="!user.isActive"
-          [class.hover:bg-danger/80]="user.isActive" [class.hover:bg-success/80]="!user.isActive">
-          {{ user.isActive ? 'Deshabilitar Usuario' : 'Habilitar Usuario' }}
-        </button>
-        }
         @if (user.description) {
         <p class="mt-2 text-maintext/80">{{ user.description }}</p>
         }
@@ -36,23 +28,34 @@
           <p><strong>Email:</strong> {{ user.email }}</p>
           <p><strong>Miembro desde:</strong> {{ user.createdAt | date: 'longDate' }}</p>
         </div>
+
+        @if (authService.currentUser()?.profile === 'admin' && authService.currentUser()?._id !== user._id) {
+        <button (click)="toggleUserStatus()"
+          class="mt-4 rounded-lg px-4 py-2 text-sm font-bold text-white transition-all shadow-md"
+          [class.bg-danger]="user.isActive" [class.bg-success]="!user.isActive"
+          [class.hover:bg-danger/80]="user.isActive" [class.hover:bg-success/80]="!user.isActive">
+          {{ user.isActive ? 'Deshabilitar Usuario' : 'Habilitar Usuario' }}
+        </button>
+        }
       </div>
     </div>
   </div>
   }
 
   <div>
-    <h2 class="mb-4 text-2xl font-semibold text-maintext"> Publicaciones</h2>
+    <h2 class="mb-4 text-2xl font-semibold text-maintext">
+        {{ profileUser()?._id === authService.currentUser()?._id ? 'Mis Últimas Publicaciones' : 'Publicaciones de @' + profileUser()?.username }}
+    </h2>
 
     @if (isLoading()) {
     <div class="rounded-xl border border-muted/20 bg-card/60 p-6 text-center text-muted shadow-lg backdrop-blur-lg">
-      <p>Cargando mis publicaciones...</p>
+      <p>Cargando publicaciones...</p>
     </div>
     }
 
     @if (!isLoading() && myPosts().length === 0) {
     <div class="rounded-xl border border-muted/20 bg-card/60 p-6 text-center text-muted shadow-lg backdrop-blur-lg">
-      <p>Aún no has creado ninguna publicación.</p>
+      <p>Aún no hay publicaciones para mostrar.</p>
     </div>
     }
 

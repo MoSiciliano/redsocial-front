@@ -33,7 +33,7 @@ export const routes: Routes = [
 
   {
     path: 'dashboard',
-    loadComponent: () => import('./components/dashboard/dashboard').then(m => m.Dashboard),
+    loadComponent: () => import('./pages/dashboard/dashboard').then(m => m.Dashboard),
     canActivate: [adminGuard] // <--- ¡Candado de seguridad! Solo admins
   },
   // Redirecciones

@@ -13,11 +13,12 @@ import { ChartConfiguration, ChartOptions } from 'chart.js';
 import { BaseChartDirective } from 'ng2-charts';
 import { ModalService } from '../../services/modal.service';
 import { FormsModule } from '@angular/forms';
+import { NavbarComponent } from "../../components/nav/nav";
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, BaseChartDirective, FormsModule],
+  imports: [CommonModule, BaseChartDirective, FormsModule, NavbarComponent],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.css',
 })

@@ -4,51 +4,71 @@ import { AuthService } from '../../services/auth.service';
 import { PublicationsService } from '../../services/publications.service'; // <-- 2. Importa el servicio de Pubs
 import { Publication, ReactionType } from '../../models/publication'; // <-- 3. Importa el modelo
 import { NavbarComponent } from '../../components/nav/nav';
+import { UsersService } from '../../services/users.service';
+import { ActivatedRoute } from '@angular/router';
+import { ImgFallbackDirective } from '../../directives/img.directive';
 
 @Component({
   selector: 'app-profile',
   standalone: true,
-  imports: [CommonModule, NavbarComponent], 
+  imports: [CommonModule, NavbarComponent, ImgFallbackDirective],
   templateUrl: './profile.html',
 })
 export class Profile implements OnInit {
   
   authService = inject(AuthService);
   private pubService = inject(PublicationsService); 
+  private usersService = inject(UsersService); // Inyectar
+  private route = inject(ActivatedRoute);      // Inyectar
   // --- Señales de Estado ---
   myPosts = signal<Publication[]>([]);
   isLoading = signal(true);
-  // El currentUser() ya lo provee el authService
+
+  profileUser = signal<any>(null); 
 
   ngOnInit() {
-    this.loadMyPosts();
+    // Suscribirse a cambios en la URL (por si busco a alguien estando en mi perfil)
+    this.route.paramMap.subscribe(params => {
+      const id = params.get('id');
+      this.loadProfileData(id);
+    });
   }
 
-  loadMyPosts() {
+  loadProfileData(id: string | null) {
     this.isLoading.set(true);
-    const currentUser = this.authService.currentUser();
+    this.myPosts.set([]); // Limpiar posts anteriores
 
-    if (!currentUser) {
-      return;
+    // Si es 'me' o no hay ID, es mi perfil
+    if (!id || id === 'me') {
+      const current = this.authService.currentUser();
+      this.profileUser.set(current);
+      if (current?._id) this.loadPosts(current._id);
+    } 
+    // Si es un ID, buscamos al usuario
+    else {
+      this.usersService.getUserById(id).subscribe({
+        next: (user) => {
+          this.profileUser.set(user);
+          this.loadPosts(user._id);
+        },
+        error: () => this.isLoading.set(false)
+      });
     }
+  }
 
-    const userId = currentUser._id;
-    this.pubService
-      .getPublications(1, 3, {
-        sortBy: 'new', 
-        userId: userId, 
-      })
+  loadPosts(userId: string) {
+    this.pubService.getPublications(1, 10, { sortBy: 'new', userId: userId })
       .subscribe({
         next: (res) => {
           this.myPosts.set(res.docs);
           this.isLoading.set(false);
         },
-        error: (err) => {
-          console.error('Error al cargar mis publicaciones:', err);
-          this.isLoading.set(false);
-        },
+        error: () => this.isLoading.set(false)
       });
   }
+
+
+
   getUserReaction(post: Publication): ReactionType | null {
     const currentUserId = this.authService.currentUser()?._id;
     if (!currentUserId) return null;

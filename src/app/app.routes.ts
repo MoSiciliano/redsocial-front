@@ -1,6 +1,6 @@
 import { Routes } from '@angular/router';
-import { authGuard } from './guards/auth-guard';
-import { adminGuard } from './guards/admin-guard';
+import { authGuard } from './guards/auth.guard';
+import { adminGuard } from './guards/admin.guard';
 
 export const routes: Routes = [
   // Rutas públicas
@@ -26,7 +26,7 @@ export const routes: Routes = [
     canActivate: [authGuard],
   },
   {
-    path: 'profile/id', 
+    path: 'profile/:id',
     loadComponent: () => import('./pages/profile/profile').then((m) => m.Profile),
     canActivate: [authGuard],
   },

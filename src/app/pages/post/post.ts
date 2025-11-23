@@ -1,6 +1,6 @@
 import { Component, ChangeDetectionStrategy, inject, signal, OnInit } from '@angular/core';
 import { CommonModule, Location } from '@angular/common'; // 1. Importa Location
-import { ActivatedRoute, Router, RouterLink } from '@angular/router'; // 2. Importa ActivatedRoute
+import { ActivatedRoute, Router } from '@angular/router'; // 2. Importa ActivatedRoute
 import { ReactiveFormsModule, FormGroup, FormControl, Validators } from '@angular/forms'; // 3. Para el form
 import { switchMap } from 'rxjs/operators';
 

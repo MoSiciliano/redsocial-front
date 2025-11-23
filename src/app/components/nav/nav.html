@@ -1,116 +1,63 @@
 <nav
-  class="fixed top-0 left-0 flex h-screen w-64 flex-col justify-between border-r border-muted/20 bg-card/60 p-6 backdrop-blur-lg"
->
+  class="fixed top-0 left-0 flex h-screen w-64 flex-col justify-between border-r border-muted/20 bg-card/60 p-6 backdrop-blur-lg">
   <div>
-    <a
-      routerLink="/posts"
-      class="mb-10 flex items-center gap-2 text-3xl font-extrabold text-primary"
-    >
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        fill="none"
-        viewBox="0 0 24 24"
-        stroke-width="1.5"
-        stroke="currentColor"
-        class="h-8 w-8"
-      >
-        <path
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          d="m3.75 13.5 10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75Z"
-        />
+    <a routerLink="/posts" class="mb-10 flex items-center gap-2 text-3xl font-extrabold text-primary">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
+        class="h-8 w-8">
+        <path stroke-linecap="round" stroke-linejoin="round"
+          d="m3.75 13.5 10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75Z" />
       </svg>
       SparkIt
     </a>
 
     <ul class="flex flex-col gap-4">
       <li>
-        <a
-          routerLink="/posts"
-          routerLinkActive="bg-primary/20 text-primary"
-          [routerLinkActiveOptions]="{ exact: true }"
-          class="flex items-center gap-4 rounded-lg px-4 py-3 text-maintext transition-all hover:bg-muted/20 hover:text-primary"
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke-width="2"
-            stroke="currentColor"
-            class="h-6 w-6"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              d="M2.25 12l8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25"
-            />
+        <a routerLink="/posts" routerLinkActive="bg-primary/20 text-primary" [routerLinkActiveOptions]="{ exact: true }"
+          class="flex items-center gap-4 rounded-lg px-4 py-3 text-maintext transition-all hover:bg-muted/20 hover:text-primary">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"
+            class="h-6 w-6">
+            <path stroke-linecap="round" stroke-linejoin="round"
+              d="M2.25 12l8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25" />
           </svg>
           <span class="text-lg font-semibold">Inicio</span>
         </a>
       </li>
 
       <li>
-        <a
-          routerLink="/profile"
-          routerLinkActive="bg-primary/20 text-primary"
-          class="flex items-center gap-4 rounded-lg px-4 py-3 text-maintext transition-all hover:bg-muted/20 hover:text-primary"
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke-width="2"
-            stroke="currentColor"
-            class="h-6 w-6"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A1.75 1.75 0 0 1 18 21.75H6a1.75 1.75 0 0 1-1.499-1.632Z"
-            />
+        <a routerLink="/profile" routerLinkActive="bg-primary/20 text-primary"
+          class="flex items-center gap-4 rounded-lg px-4 py-3 text-maintext transition-all hover:bg-muted/20 hover:text-primary">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"
+            class="h-6 w-6">
+            <path stroke-linecap="round" stroke-linejoin="round"
+              d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A1.75 1.75 0 0 1 18 21.75H6a1.75 1.75 0 0 1-1.499-1.632Z" />
           </svg>
           <span class="text-lg font-semibold">Perfil</span>
         </a>
       </li>
 
       <li class="relative">
-        <button
-          (click)="isSortMenuOpen.set(!isSortMenuOpen())"
-          class="flex w-full items-center gap-4 rounded-lg px-4 py-3 text-maintext transition-all hover:bg-muted/20 hover:text-primary"
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke-width="1.5"
-            stroke="currentColor"
-            class="h-6 w-6"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              d="M6 12L3.269 3.126A59.768 59.768 0 0121.485 12 59.77 59.77 0 013.27 20.875L6 12zm0 0h7.5"
-            />
+        <button (click)="isSortMenuOpen.set(!isSortMenuOpen())"
+          class="flex w-full items-center gap-4 rounded-lg px-4 py-3 text-maintext transition-all hover:bg-muted/20 hover:text-primary">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+            stroke="currentColor" class="h-6 w-6">
+            <path stroke-linecap="round" stroke-linejoin="round"
+              d="M6 12L3.269 3.126A59.768 59.768 0 0121.485 12 59.77 59.77 0 013.27 20.875L6 12zm0 0h7.5" />
           </svg>
           <span class="text-lg font-semibold">Explorar</span>
         </button>
 
         @if (isSortMenuOpen()) {
         <div
-          class="absolute left-full top-1/2 z-10 ml-2 w-56 -translate-y-1/2 rounded-xl border border-muted/20 bg-card shadow-lg backdrop-blur-lg"
-        >
+          class="absolute left-full top-1/2 z-10 ml-2 w-56 -translate-y-1/2 rounded-xl border border-muted/20 bg-card shadow-lg backdrop-blur-lg">
           <div class="p-2" role="menu">
             @for (sort of pubService.sortOptions; track sort) {
-            <button
-              (click)="selectSort(sort)"
+            <button (click)="selectSort(sort)"
               class="flex w-full items-center gap-3 rounded-lg px-4 py-2.5 text-left text-sm font-medium transition-colors"
               [class.bg-primary/20]="pubService.currentSort() === sort"
               [class.text-primary]="pubService.currentSort() === sort"
               [class.text-muted]="pubService.currentSort() !== sort"
               [class.hover:bg-muted/10]="pubService.currentSort() !== sort"
-              [class.hover:text-maintext]="pubService.currentSort() !== sort"
-              role="menuitem"
-            >
+              [class.hover:text-maintext]="pubService.currentSort() !== sort" role="menuitem">
               <span>
                 {{ sort === 'new' ? 'Nuevos' : '' }}
                 {{ sort === 'rockets' ? 'Viables 🚀' : '' }}
@@ -125,37 +72,44 @@
       </li>
     </ul>
   </div>
+  <div class="relative mx-4 flex-1 max-w-md">
+    <input type="text" [ngModel]="searchTerm()" (ngModelChange)="searchTerm.set($event)"
+      placeholder="Buscar personas..."
+      class="w-full rounded-lg border border-muted bg-card/50 px-3 py-2 text-maintext focus:border-primary focus:outline-none" />
+
+    @if (searchTerm() && (allUsers() | filter:searchTerm():['username', 'name', 'lastname']).length > 0) {
+    <div
+      class="absolute left-0 right-0 top-full z-50 mt-1 max-h-60 overflow-y-auto rounded-lg border border-muted/20 bg-card shadow-xl backdrop-blur-lg">
+
+      @for (user of allUsers() | filter:searchTerm():['username', 'name', 'lastname']; track user._id) {
+      <div (click)="goToProfile(user._id)"
+        class="flex cursor-pointer items-center gap-3 p-3 hover:bg-primary/10 transition-colors border-b border-muted/10 last:border-0">
+        <img [src]="user.imageProfile" appImgFallback class="h-8 w-8 rounded-full object-cover">
+        <div>
+          <p class="font-semibold text-sm text-maintext">{{ user.name }} {{ user.lastname }}</p>
+          <p class="text-xs text-muted">@{{ user.username }}</p>
+        </div>
+      </div>
+      }
+    </div>
+    }
+  </div>
 
   @if (currentUser(); as user) {
-  <div
-    class="flex cursor-pointer items-center gap-3 rounded-lg p-3 transition-all hover:bg-muted/20"
-    (click)="logout()"
-    title="Cerrar sesión"
-  >
-    <img
-      [src]="user.imageProfile"
-      alt="Tu avatar"
-      class="h-10 w-10 rounded-full border-2 border-primary/50 object-cover"
-    />
+  <div class="flex cursor-pointer items-center gap-3 rounded-lg p-3 transition-all hover:bg-muted/20" (click)="logout()"
+    title="Cerrar sesión">
+    <img [src]="user.imageProfile" alt="Tu avatar"
+      class="h-10 w-10 rounded-full border-2 border-primary/50 object-cover" />
     <div class="flex-1 overflow-hidden">
       <p class="truncate font-semibold text-maintext">
         {{ user.name }} {{ user.lastname }}
       </p>
       <p class="truncate text-sm text-muted">@{{ user.username }}</p>
     </div>
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      fill="none"
-      viewBox="0 0 24 24"
-      stroke-width="2"
-      stroke="currentColor"
-      class="h-6 w-6 text-muted transition-all group-hover:text-danger"
-    >
-      <path
-        stroke-linecap="round"
-        stroke-linejoin="round"
-        d="M15.75 9V5.25A2.25 2.25 0 0 0 13.5 3h-6a2.25 2.25 0 0 0-2.25 2.25v13.5A2.25 2.25 0 0 0 7.5 21h6a2.25 2.25 0 0 0 2.25-2.25V15m-3 0-3-3m0 0 3-3m-3 3H21"
-      />
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"
+      class="h-6 w-6 text-muted transition-all group-hover:text-danger">
+      <path stroke-linecap="round" stroke-linejoin="round"
+        d="M15.75 9V5.25A2.25 2.25 0 0 0 13.5 3h-6a2.25 2.25 0 0 0-2.25 2.25v13.5A2.25 2.25 0 0 0 7.5 21h6a2.25 2.25 0 0 0 2.25-2.25V15m-3 0-3-3m0 0 3-3m-3 3H21" />
     </svg>
   </div>
   }

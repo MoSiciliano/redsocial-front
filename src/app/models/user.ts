@@ -1,5 +1,5 @@
 export interface User {
-  _id?: string; // lo devuelve el back, no lo mandás vos
+  _id: string; 
   name: string;
   lastname: string;
   username: string;

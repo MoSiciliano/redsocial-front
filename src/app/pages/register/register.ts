@@ -5,11 +5,12 @@ import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { passwordMatchValidator } from '../../validators/password';
 import { ageRangeValidator } from '../../validators/age';
+import { ImgFallbackDirective } from "../../directives/img.directive";
 
 @Component({
   selector: 'app-register',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterLink],
+  imports: [CommonModule, ReactiveFormsModule, RouterLink, ImgFallbackDirective],
   templateUrl: 'register.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

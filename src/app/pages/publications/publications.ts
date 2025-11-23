@@ -6,11 +6,13 @@ import { CreatePost } from '../../components/create-post/create-post';
 import { PublicationsService } from '../../services/publications.service';
 import { AuthService } from '../../services/auth.service';
 import { RouterLink } from '@angular/router';
+import { CommentsService } from '../../services/comments.service';
+import { FormControl, Validators, ReactiveFormsModule}  from '@angular/forms';
 
 @Component({
   selector: 'app-posts',
   standalone: true,
-  imports: [CommonModule, NavbarComponent, CreatePost, RouterLink],
+  imports: [CommonModule, NavbarComponent, CreatePost, RouterLink, ReactiveFormsModule],
   templateUrl: 'publications.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -24,6 +26,15 @@ export class Publications implements OnInit {
   currentPage = signal(1);
   totalPages = signal(1);
   isLoadingMore = signal(false);
+
+  commentsService = inject(CommentsService);
+
+  // Control de UI
+  expandedComments = signal<Set<string>>(new Set()); // Qué posts están abiertos
+  commentsCache = signal<Map<string, any[]>>(new Map()); // Comentarios cargados
+  commentControl = new FormControl('', [Validators.required, Validators.maxLength(300)]);
+  activePostId = signal<string | null>(null); // En qué post estoy escribiendo
+  
   constructor() {
     effect(() => {
       this.pubService.currentSort();
@@ -145,5 +156,38 @@ export class Publications implements OnInit {
   }
   private removePostFromList(postId: string) {
     this.posts.update((currentPosts) => currentPosts.filter((p) => p._id !== postId));
+  }
+  toggleComments(postId: string) {
+    const currentSet = new Set(this.expandedComments());
+    if (currentSet.has(postId)) {
+      currentSet.delete(postId);
+    } else {
+      currentSet.add(postId);
+      this.loadComments(postId);
+    }
+    this.expandedComments.set(currentSet);
+  }
+
+  loadComments(postId: string) {
+    // Si no están en caché, pedirlos
+    if (!this.commentsCache().has(postId)) {
+      this.commentsService.getComments(postId, 1, 50).subscribe(res => {
+        const newMap = new Map(this.commentsCache());
+        newMap.set(postId, res.docs);
+        this.commentsCache.set(newMap);
+      });
+    }
+  }
+
+  sendInlineComment(postId: string) {
+    if (this.commentControl.invalid || !this.commentControl.value) return;
+    
+    this.commentsService.postComment(postId, this.commentControl.value).subscribe(newComment => {
+      const newMap = new Map(this.commentsCache());
+      const list = newMap.get(postId) || [];
+      newMap.set(postId, [newComment, ...list]); // Agregamos el nuevo al principio
+      this.commentsCache.set(newMap);
+      this.commentControl.reset();
+    });
   }
 }

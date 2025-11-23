@@ -18,7 +18,8 @@
             class="h-32 w-32 overflow-hidden rounded-full border-2 border-primary/50 bg-card/50 flex items-center justify-center text-muted cursor-pointer transition-all hover:border-primary"
             title="Seleccionar una imagen de perfil">
             @if(selectedFileUrl(); as previewUrl) {
-            <img [src]="previewUrl" alt="Vista previa" class="h-full w-full object-cover" />
+            <img [src]="previewUrl" appImgFallback
+             alt="Vista previa" class="h-full w-full object-cover" />
             } @else {
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
               stroke="currentColor" class="h-16 w-16 opacity-50">

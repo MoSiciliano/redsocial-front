@@ -39,7 +39,7 @@ export class Publications implements OnInit {
     effect(() => {
       this.pubService.currentSort();
       this.currentPage.set(1);
-      this.loadPosts();
+      this.loadPosts(true);
     });
   }
   ngOnInit(): void {}

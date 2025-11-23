@@ -11,15 +11,11 @@
     </h2>
 
     @if (isLoading()) {
-    <div
-      class="rounded-xl border border-muted/20 bg-card/60 p-6 text-center text-muted shadow-lg backdrop-blur-lg"
-    >
+    <div class="rounded-xl border border-muted/20 bg-card/60 p-6 text-center text-muted shadow-lg backdrop-blur-lg">
       <p>Cargando publicaciones...</p>
     </div>
     } @else if (!isLoading() && posts().length === 0) {
-    <div
-      class="rounded-xl border border-muted/20 bg-card/60 p-6 text-center text-muted shadow-lg backdrop-blur-lg"
-    >
+    <div class="rounded-xl border border-muted/20 bg-card/60 p-6 text-center text-muted shadow-lg backdrop-blur-lg">
       <p>¡Aún no hay publicaciones! Sé el primero en crear un Spark.</p>
     </div>
     } @else {
@@ -27,14 +23,12 @@
     <div class="space-y-6">
       @for (post of posts(); track post._id) {
 
-      <a routerLink="['/posts', post._id]" class="block transition-transform hover:scale-[1.02]">
+      <a [routerLink]="['/posts', post._id]" class="block transition-transform hover:scale-[1.02]">
+
         <div class="rounded-xl border border-muted/20 bg-card/60 p-6 shadow-lg backdrop-blur-lg">
           <div class="flex items-center gap-3">
-            <img
-              [src]="post.autor.imageProfile"
-              alt="Avatar de {{ post.autor.username }}"
-              class="h-10 w-10 rounded-full object-cover"
-            />
+            <img [src]="post.autor.imageProfile" alt="Avatar de {{ post.autor.username }}"
+              class="h-10 w-10 rounded-full object-cover" />
             <span class="font-semibold text-maintext">{{ post.autor.username }}</span>
           </div>
 
@@ -42,150 +36,61 @@
           <p class="mt-2 text-maintext/90">{{ post.message }}</p>
 
           @if (post.imageUrl) {
-          <img
-            [src]="post.imageUrl"
-            alt="Imagen del post"
-            class="mt-4 w-full rounded-lg object-cover"
-          />
+          <img [src]="post.imageUrl" alt="Imagen del post" class="mt-4 w-full rounded-lg object-cover" />
           }
 
-          <div class="mt-4 pt-4 border-t border-muted/20 flex items-center gap-4">
-            <div class="flex items-center gap-2">
-              <button
-                (click)="onReact(post, 'heart'); $event.stopPropagation(); $event.preventDefault()"
-                [class.liked]="getUserReaction(post) === 'heart'"
-                class="like-button relative p-2"
-              >
-                <svg
-                  class="heart-outline h-6 w-6 text-muted"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke-width="2"
-                  stroke="currentColor"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.099 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z"
-                  />
-                </svg>
-                <svg
-                  class="heart-fill h-6 w-6 text-danger"
-                  fill="currentColor"
-                  viewBox="0 0 24 24"
-                  stroke-width="2"
-                  stroke="currentColor"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.099 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z"
-                  />
-                </svg>
-              </button>
-              <span class="text-sm text-muted">{{ post.heartCount }}</span>
+          <div class="mt-4 pt-4 border-t border-muted/20 flex items-center justify-between">
+
+            <div class="flex items-center gap-4">
+              <div class="flex items-center gap-2">
+                <button (click)="onReact(post, 'heart'); $event.stopPropagation(); $event.preventDefault()" ...>
+                </button>
+                <span class="text-sm text-muted">{{ post.heartCount }}</span>
+              </div>
+
+              <div class="flex items-center gap-2">
+                <button (click)="onReact(post, 'rocket'); $event.stopPropagation(); $event.preventDefault()" ...>
+                  <span class="flex h-6 w-6 items-center justify-center text-xl">🚀</span>
+                </button>
+                <span class="text-sm text-muted">{{ post.rocketCount }}</span>
+              </div>
+
+              <div class="flex items-center gap-2">
+                <button (click)="onReact(post, 'doubt'); $event.stopPropagation(); $event.preventDefault()" ...>
+                  <span class="flex h-6 w-6 items-center justify-center text-xl">🤔</span>
+                </button>
+                <span class="text-sm text-muted">{{ post.doubtCount }}</span>
+              </div>
             </div>
 
-            <div class="flex items-center gap-2">
-              <button
-                (click)="onReact(post, 'rocket'); $event.stopPropagation(); $event.preventDefault()"
-                class="p-2 text-muted transition-colors hover:text-blue-500"
-                [class.text-blue-500]="getUserReaction(post) === 'rocket'"
-              >
-                <span class="flex h-6 w-6 items-center justify-center text-xl">🚀</span>
-              </button>
-              <span class="text-sm text-muted">{{ post.rocketCount }}</span>
-            </div>
-
-            <div class="flex items-center gap-2">
-              <button
-                (click)="onReact(post, 'doubt'); $event.stopPropagation(); $event.preventDefault()"
-                class="p-2 text-muted transition-colors hover:text-yellow-500"
-                [class.text-yellow-500]="getUserReaction(post) === 'doubt'"
-              >
-                <span class="flex h-6 w-6 items-center justify-center text-xl">🤔</span>
-              </button>
-              <span class="text-sm text-muted">{{ post.doubtCount }}</span>
-            </div>
-          </div>
-          <div class="flex items-center justify-between ...">
-            <div class="flex gap-2"></div>
-
-            <button
-              (click)="toggleComments(post._id); $event.stopPropagation(); $event.preventDefault()"
-              class="flex items-center gap-2 text-muted hover:text-primary transition-colors"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke-width="2"
-                stroke="currentColor"
-                class="w-6 h-6"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  d="M12 20.25c4.97 0 9-3.69 9-8.25s-4.03-8.25-9-8.25S3 7.44 3 12c0 .385.028.766.081 1.141.382 2.658 2.37 4.8 4.919 6.086.97.49 1.08 1.715.26 2.464l-1.07.953c-.68.605-.102 1.726.8.73l1.755-1.916c.77-.84 1.968-1.096 3.01-.641.736.322 1.536.483 2.35.483Z"
-                />
+            <button (click)="toggleComments(post._id); $event.stopPropagation(); $event.preventDefault()"
+              class="flex items-center gap-2 text-muted hover:text-primary transition-colors">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
+                stroke="currentColor" class="w-6 h-6">
+                <path stroke-linecap="round" stroke-linejoin="round"
+                  d="M12 20.25c4.97 0 9-3.69 9-8.25s-4.03-8.25-9-8.25S3 7.44 3 12c0 .385.028.766.081 1.141.382 2.658 2.37 4.8 4.919 6.086.97.49 1.08 1.715.26 2.464l-1.07.953c-.68.605-.102 1.726.8.73l1.755-1.916c.77-.84 1.968-1.096 3.01-.641.736.322 1.536.483 2.35.483Z" />
               </svg>
               <span>{{ expandedComments().has(post._id) ? 'Ocultar' : 'Comentarios' }}</span>
             </button>
-          </div>
 
-          @if (expandedComments().has(post._id)) {
-          <div
-            class="mt-4 border-t border-muted/20 pt-4 animate-fade-in"
-            (click)="$event.stopPropagation(); $event.preventDefault()"
-          >
-            <div class="flex gap-2 mb-4">
-              <input
-                [formControl]="commentControl"
-                (focus)="activePostId.set(post._id)"
-                placeholder="Escribe un comentario..."
-                class="flex-1 bg-background/50 border border-muted rounded-lg px-3 py-2 text-sm focus:border-primary outline-none"
-              />
-              <button
-                (click)="sendInlineComment(post._id)"
-                [disabled]="activePostId() !== post._id || commentControl.invalid"
-                class="text-primary font-bold text-sm disabled:opacity-50"
-              >
-                Enviar
-              </button>
-            </div>
-
-            <div class="flex flex-col gap-3 max-h-60 overflow-y-auto pr-2">
-              @for (c of commentsCache().get(post._id); track c._id) {
-              <div class="bg-background/30 p-2 rounded-lg text-sm">
-                <span class="font-bold text-primary mr-2">{{ c.autor.username }}:</span>
-                <span class="text-maintext">{{ c.message }}</span>
-              </div>
-              } @empty {
-              <p class="text-xs text-muted text-center py-2">Sé el primero en comentar.</p>
-              }
-            </div>
           </div>
-          }
         </div>
       </a>
       }
     </div>
     <div class="mt-10 flex justify-center">
-      @if (currentPage() < totalPages() && !isLoadingMore()) {
-      <button
-        (click)="onLoadMore()"
-        class="rounded-full bg-primary px-6 py-2.5 text-sm font-semibold text-card transition-transform hover:scale-105"
-      >
+      @if (currentPage() < totalPages() && !isLoadingMore()) { <button (click)="onLoadMore()"
+        class="rounded-full bg-primary px-6 py-2.5 text-sm font-semibold text-card transition-transform hover:scale-105">
         Cargar más publicaciones
-      </button>
-      } @if (isLoadingMore()) {
-      <div class="flex items-center gap-2 text-muted">
-        <svg class="animate-spin h-5 w-5 text-primary"></svg>
-        <span>Cargando...</span>
-      </div>
-      } @if (currentPage() >= totalPages() && posts().length > 0 && !isLoading()) {
-      <p class="text-muted">No hay más publicaciones por cargar.</p>
-      }
+        </button>
+        } @if (isLoadingMore()) {
+        <div class="flex items-center gap-2 text-muted">
+          <svg class="animate-spin h-5 w-5 text-primary"></svg>
+          <span>Cargando...</span>
+        </div>
+        } @if (currentPage() >= totalPages() && posts().length > 0 && !isLoading()) {
+        <p class="text-muted">No hay más publicaciones por cargar.</p>
+        }
     </div>
 
     }

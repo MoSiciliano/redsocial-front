@@ -24,7 +24,7 @@
       </li>
 
       <li>
-        <a routerLink="/profile" routerLinkActive="bg-primary/20 text-primary"
+        <a [routerLink]="['/profile', 'me']" routerLinkActive="bg-primary/20 text-primary"
           class="flex items-center gap-4 rounded-lg px-4 py-3 text-maintext transition-all hover:bg-muted/20 hover:text-primary">
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"
             class="h-6 w-6">
@@ -79,8 +79,7 @@
 
     @if (searchTerm() && (allUsers() | filter:searchTerm():['username', 'name', 'lastname']).length > 0) {
     <div
-      class="absolute left-0 right-0 top-full z-50 mt-1 max-h-60 overflow-y-auto rounded-lg border border-muted/20 bg-card shadow-xl backdrop-blur-lg">
-
+      class="absolute left-0 w-full top-full z-50 mt-1 max-h-60 overflow-y-auto overflow-x-hidden rounded-lg border border-muted/20 bg-card shadow-xl backdrop-blur-lg">
       @for (user of allUsers() | filter:searchTerm():['username', 'name', 'lastname']; track user._id) {
       <div (click)="goToProfile(user._id)"
         class="flex cursor-pointer items-center gap-3 p-3 hover:bg-primary/10 transition-colors border-b border-muted/10 last:border-0">

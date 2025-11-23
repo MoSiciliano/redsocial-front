@@ -15,11 +15,12 @@ import { ModalService } from '../../services/modal.service';
 import { FormsModule } from '@angular/forms';
 import { NavbarComponent } from '../../components/nav/nav';
 import { UsersService } from '../../services/users.service';
+import  { FilterPipe } from '../../pipes/filter.pipe';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, BaseChartDirective, FormsModule, NavbarComponent],
+  imports: [CommonModule, BaseChartDirective, FormsModule, NavbarComponent, FilterPipe],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.css',
 })
@@ -41,6 +42,7 @@ export class Dashboard implements OnInit {
     from: '',
     to: '',
   };
+  searchTerm = '';
 
   showCreateForm = false; // Para mostrar/ocultar el formulario
   newUser: any = {

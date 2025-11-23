@@ -8,6 +8,7 @@ export interface User {
   birthdate: string;
   description?: string;
   imageProfile?: string;
+  isActive: boolean;
   password: string;
   rol: 'usuario' | 'administrador';
   createdAt: string;

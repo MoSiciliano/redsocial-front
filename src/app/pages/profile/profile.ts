@@ -7,6 +7,7 @@ import { NavbarComponent } from '../../components/nav/nav';
 import { UsersService } from '../../services/users.service';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { ImgFallbackDirective } from '../../directives/img.directive';
+import { ModalService } from '../../services/modal.service';
 
 @Component({
   selector: 'app-profile',
@@ -19,7 +20,9 @@ export class Profile implements OnInit {
   authService = inject(AuthService);
   private pubService = inject(PublicationsService); 
   private usersService = inject(UsersService); // Inyectar
-  private route = inject(ActivatedRoute);      // Inyectar
+  private route = inject(ActivatedRoute);      
+  private modalService = inject(ModalService);
+
   // --- Señales de Estado ---
   myPosts = signal<Publication[]>([]);
   isLoading = signal(true);
@@ -56,6 +59,32 @@ export class Profile implements OnInit {
     }
   }
 
+  toggleUserStatus() {
+    const user = this.profileUser();
+    const currentUser = this.authService.currentUser();
+
+    if (!user || !currentUser || currentUser.profile !== 'admin') return;
+
+    // Evitar que el admin se borre a sí mismo
+    if (user._id === currentUser._id) {
+      this.modalService.show('Error', 'No puedes deshabilitar tu propia cuenta.');
+      return;
+    }
+
+    const action = user.isActive
+      ? this.usersService.disableUser(user._id)
+      : this.usersService.restoreUser(user._id);
+
+    action.subscribe({
+      next: () => {
+        // Actualizamos el estado localmente para ver el cambio en el botón
+        this.profileUser.update(u => u ? ({ ...u, isActive: !u.isActive }) : null);
+        this.modalService.show('Éxito', `Usuario ${user.isActive ? 'deshabilitado' : 'habilitado'} correctamente.`);
+      },
+      error: () => this.modalService.show('Error', 'No se pudo cambiar el estado.')
+    });
+  }
+  
   loadPosts(userId: string) {
     this.pubService.getPublications(1, 10, { sortBy: 'new', userId: userId })
       .subscribe({

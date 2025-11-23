@@ -15,15 +15,15 @@
     } @else if (post(); as p) {
 
     <div class="relative flex w-full flex-col rounded-lg bg-card shadow-lg">
-        <!-- CABECERA -->
+      
         <div class="flex items-center justify-between p-4">
-            <div class="flex items-center gap-3">
-                <img [src]="p.autor.imageProfile" alt="Autor" class="h-10 w-10 rounded-full object-cover" />
-                <span class="font-semibold">{{ p.autor.username }}</span>
+           <div [routerLink]="['/profile', p.autor._id]" 
+                class="flex items-center gap-3 cursor-pointer group hover:opacity-80"
+            >
+                <img [src]="p.autor.imageProfile" appImgFallback alt="Autor" class="h-10 w-10 rounded-full object-cover" />
+                <span class="font-semibold group-hover:text-primary transition-colors">{{ p.autor.username }}</span>
             </div>
-
             <div class="flex gap-2">
-                <!-- BOTÓN EDITAR POST (Solo dueño) -->
                 @if (isPostOwner() && !isEditingPost()) {
                 <button (click)="startEditPost()" class="text-muted hover:text-primary transition-colors p-2"
                     title="Editar publicación">
@@ -35,7 +35,7 @@
                 </button>
                 }
 
-                <!-- BOTÓN BORRAR -->
+               
                 @if (canDelete() && !isEditingPost()) {
                 <button (click)="deletePost()" class="text-muted hover:text-danger transition-colors p-2"
                     title="Eliminar publicación">
@@ -53,7 +53,6 @@
         <img [src]="p.imageUrl" alt="Publicación" class="w-full object-cover" />
         }
 
-        <!-- CONTENIDO DEL MENSAJE (Lectura vs Edición) -->
         <div class="p-4">
             @if (!isEditingPost()) {
             <p class="mt-2">{{ p.message }}</p>
@@ -111,7 +110,6 @@
             <span class="text-base font-medium text-muted">{{ p.doubtCount }}</span>
         </div>
     </div>
-    <!-- FORMULARIO COMENTARIOS (No se ve si estoy editando el post para no ensuciar) -->
     @if (!isEditingPost()) {
     <form [formGroup]="commentForm" (ngSubmit)="postComment()" class="mt-8 flex gap-3">
         <input formControlName="message" type="text" placeholder="Escribe un comentario..."

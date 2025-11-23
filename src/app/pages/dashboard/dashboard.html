@@ -60,7 +60,7 @@
       </div>
     </div>
 
-    <div
+    <!-- <div
       class="users-header"
       style="
         display: flex;
@@ -125,6 +125,67 @@
         </thead>
         <tbody>
           @for (user of users; track user._id) {
+          <tr>
+            <td>{{ user.username }}</td>
+            <td>{{ user.email }}</td>
+            <td>
+              <span [style.color]="user.profile === 'admin' ? '#b388ff' : 'inherit'">{{
+                user.profile | uppercase
+              }}</span>
+            </td>
+            <td [style.color]="user.isActive ? '#03dac6' : '#cf6679'">
+              <strong>{{ user.isActive ? 'ACTIVO' : 'BAJA' }}</strong>
+            </td>
+            <td>
+              @if (user.profile !== 'admin') {
+              <button
+                (click)="toggleUserStatus(user)"
+                [class]="user.isActive ? 'btn-danger' : 'btn-success'"
+              >
+                {{ user.isActive ? 'Deshabilitar' : 'Habilitar' }}
+              </button>
+              } @else {
+              <span style="color: gray; font-size: 0.8em">No editable</span>
+              }
+            </td>
+          </tr>
+          } @empty {
+          <tr>
+            <td colspan="5">No se encontraron usuarios.</td>
+          </tr>
+          }
+        </tbody>
+      </table>
+    </div> -->
+    <div class="users-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 10px;">
+      <h2>Gestión de Usuarios</h2>
+      
+      <input 
+        type="text" 
+        [(ngModel)]="searchTerm" 
+        placeholder="Buscar usuario..." 
+        class="rounded-lg border border-muted bg-card px-4 py-2 text-white focus:border-primary outline-none"
+        style="min-width: 250px;"
+      />
+
+      <button class="btn-primary" (click)="showCreateForm = !showCreateForm">
+        {{ showCreateForm ? 'Cancelar' : '+ Nuevo Usuario' }}
+      </button>
+    </div>
+
+    <div class="table-responsive">
+      <table>
+        <thead>
+          <tr>
+            <th>Usuario</th>
+            <th>Email</th>
+            <th>Rol</th>
+            <th>Estado</th>
+            <th>Acción</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (user of users | filter:searchTerm:['username', 'email', 'name', 'lastname']; track user._id) {
           <tr>
             <td>{{ user.username }}</td>
             <td>{{ user.email }}</td>

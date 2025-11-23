@@ -70,28 +70,29 @@
         </div>
         }
       </li>
-    </ul>
-  </div>
-  <div class="relative mx-4 flex-1 max-w-md">
-    <input type="text" [ngModel]="searchTerm()" (ngModelChange)="searchTerm.set($event)"
-      placeholder="Buscar personas..."
-      class="w-full rounded-lg border border-muted bg-card/50 px-3 py-2 text-maintext focus:border-primary focus:outline-none" />
-
-    @if (searchTerm() && (allUsers() | filter:searchTerm():['username', 'name', 'lastname']).length > 0) {
-    <div
-      class="absolute left-0 w-full top-full z-50 mt-1 max-h-60 overflow-y-auto overflow-x-hidden rounded-lg border border-muted/20 bg-card shadow-xl backdrop-blur-lg">
-      @for (user of allUsers() | filter:searchTerm():['username', 'name', 'lastname']; track user._id) {
-      <div (click)="goToProfile(user._id)"
-        class="flex cursor-pointer items-center gap-3 p-3 hover:bg-primary/10 transition-colors border-b border-muted/10 last:border-0">
-        <img [src]="user.imageProfile" appImgFallback class="h-8 w-8 rounded-full object-cover">
-        <div>
-          <p class="font-semibold text-sm text-maintext">{{ user.name }} {{ user.lastname }}</p>
-          <p class="text-xs text-muted">@{{ user.username }}</p>
+      <li class="relative mx-4 flex-1 max-w-md">
+        <input type="text" [ngModel]="searchTerm()" (ngModelChange)="searchTerm.set($event)"
+          placeholder="Buscar personas..."
+          class="w-full rounded-lg border border-muted bg-card/50 px-3 py-2 text-maintext focus:border-primary focus:outline-none" />
+  
+        @if (searchTerm() && (allUsers() | filter:searchTerm():['username', 'name', 'lastname']).length > 0) {
+        <div
+          class="absolute left-0 w-full top-full z-50 mt-1 max-h-60 overflow-y-auto overflow-x-hidden rounded-lg border border-muted/20 bg-card shadow-xl backdrop-blur-lg">
+          @for (user of allUsers() | filter:searchTerm():['username', 'name', 'lastname']; track user._id) {
+          <div (click)="goToProfile(user._id)"
+            class="flex cursor-pointer items-center gap-3 p-3 hover:bg-primary/10 transition-colors border-b border-muted/10 last:border-0">
+            <img [src]="user.imageProfile" appImgFallback class="h-8 w-8 rounded-full object-cover">
+            <div>
+              <p class="font-semibold text-sm text-maintext">{{ user.name }} {{ user.lastname }}</p>
+              <p class="text-xs text-muted">@{{ user.username }}</p>
+            </div>
+          </div>
+          }
         </div>
-      </div>
-      }
-    </div>
-    }
+        }
+      </li>
+    </ul>
+
   </div>
 
   @if (currentUser(); as user) {

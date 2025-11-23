@@ -13,7 +13,8 @@ import { ChartConfiguration, ChartOptions } from 'chart.js';
 import { BaseChartDirective } from 'ng2-charts';
 import { ModalService } from '../../services/modal.service';
 import { FormsModule } from '@angular/forms';
-import { NavbarComponent } from "../../components/nav/nav";
+import { NavbarComponent } from '../../components/nav/nav';
+import { UsersService } from '../../services/users.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -23,13 +24,12 @@ import { NavbarComponent } from "../../components/nav/nav";
   styleUrl: './dashboard.css',
 })
 export class Dashboard implements OnInit {
-  private http = inject(HttpClient);
   private modalService = inject(ModalService);
   private cdr = inject(ChangeDetectorRef);
+  private userService = inject(UsersService);
 
   @ViewChildren(BaseChartDirective) charts!: QueryList<BaseChartDirective>;
 
-  apiUrl = environment.apiUrl;
   users: any[] = [];
   totalComments: number = 0;
 
@@ -49,9 +49,9 @@ export class Dashboard implements OnInit {
     username: '',
     email: '',
     password: '',
-    confirmPassword: '', // Lo usamos solo para validar en el front si quieres
+    confirmPassword: '',
     birthdate: '',
-    profile: 'user', // Por defecto 'user'
+    profile: 'user',
   };
 
   // 1. Configuración BARRAS
@@ -140,7 +140,7 @@ export class Dashboard implements OnInit {
   }
 
   loadUsers() {
-    this.http.get<any[]>(`${this.apiUrl}/users`).subscribe({
+    this.userService.getUsers().subscribe({
       next: (data) => {
         this.users = data;
         this.cdr.detectChanges();
@@ -150,23 +150,8 @@ export class Dashboard implements OnInit {
   }
 
   loadStats() {
-    let url = `${this.apiUrl}/dashboard/statistics`;
-
-    // Construir Query Params
-    const params: string[] = [];
-    if (this.filters.from) params.push(`from=${this.filters.from}`);
-    if (this.filters.to) params.push(`to=${this.filters.to}`);
-
-    if (params.length > 0) {
-      url += `?${params.join('&')}`;
-    }
-
-    console.log('Consultando estadísticas:', url);
-
-    this.http.get<any>(url).subscribe({
+    this.userService.getDashboardStats(this.filters.from, this.filters.to).subscribe({
       next: (data) => {
-        console.log('Stats recibidas:', data);
-
         // --- ACTUALIZAR BARRAS ---
         this.barChartData = {
           labels: data.postsByUser.map((u: any) => u.username),
@@ -203,31 +188,33 @@ export class Dashboard implements OnInit {
         };
 
         this.cdr.detectChanges();
-
         setTimeout(() => {
-          this.charts?.forEach((child) => {
-            child.update();
-          });
+          this.charts?.forEach((child) => child.update());
         }, 200);
       },
       error: (e) => console.error('Error stats:', e),
     });
   }
+
   applyFilters() {
     this.loadStats();
   }
-  clearFilters(){
-    this.filters = {from : '', to: ''};
-    this.loadStats()
+
+  clearFilters() {
+    this.filters = { from: '', to: '' };
+    this.loadStats();
   }
+
   createUser() {
     if (!this.newUser.name || !this.newUser.email || !this.newUser.password) {
       return this.modalService.showConfirm('Error', 'Todos los campos son obligatorios');
     }
     this.newUser.confirmPassword = this.newUser.password;
-    this.http.post(`${this.apiUrl}/users`, this.newUser).subscribe({
+
+    // Usamos el servicio
+    this.userService.createUser(this.newUser).subscribe({
       next: (res) => {
-        this.modalService.show('Usuario creado', 'el usuario fue creado con exito.');
+        this.modalService.show('Usuario creado', 'El usuario fue creado con éxito.');
         this.showCreateForm = false;
         this.resetForm();
         this.loadUsers();
@@ -235,10 +222,12 @@ export class Dashboard implements OnInit {
       },
       error: (err) => {
         console.log(err);
-        this.modalService.show('Error', 'Error al crear el usuario');
+        // Aquí podrías mostrar el error específico que te manda el back (ej: "Forbidden")
+        this.modalService.show('Error', err.error?.message || 'Error al crear el usuario');
       },
     });
   }
+
   resetForm() {
     this.newUser = {
       name: '',
@@ -251,19 +240,18 @@ export class Dashboard implements OnInit {
       profile: 'user',
     };
   }
-  toggleUserStatus(user: any) {
-    const endpoint = user.isActive
-      ? `${this.apiUrl}/users/${user._id}`
-      : `${this.apiUrl}/users/${user._id}/restore`;
 
-    const action = user.isActive ? this.http.delete(endpoint) : this.http.post(endpoint, {});
+  toggleUserStatus(user: any) {
+    const action = user.isActive
+      ? this.userService.disableUser(user._id)
+      : this.userService.restoreUser(user._id);
 
     action.subscribe({
       next: () => {
         user.isActive = !user.isActive;
         this.cdr.detectChanges();
       },
-      error: () => this.modalService.show('Error', 'No tenés permisos para hacer esto.'),
+      error: (err) => this.modalService.show('Error', err.message),
     });
   }
 }

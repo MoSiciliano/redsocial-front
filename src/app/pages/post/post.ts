@@ -2,11 +2,11 @@ import { AuthService } from '../../services/auth.service';
 import { Subscription, switchMap } from 'rxjs';
 import { ModalService } from '../../services/modal.service';
 import { ImgFallbackDirective } from '../../directives/img.directive';
-import { CommonModule } from '@angular/common';
+import { CommonModule, Location} from '@angular/common';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { NavbarComponent } from '../../components/nav/nav';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { ChangeDetectionStrategy, Component, inject, OnInit, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, OnInit, OnDestroy,signal } from '@angular/core';
 import { PublicationsService } from '../../services/publications.service';
 import { CommentsService } from '../../services/comments.service';
 

@@ -15,7 +15,7 @@ import { ModalService } from '../../services/modal.service';
 import { FormsModule } from '@angular/forms';
 import { NavbarComponent } from '../../components/nav/nav';
 import { UsersService } from '../../services/users.service';
-import  { FilterPipe } from '../../pipes/filter.pipe';
+import { FilterPipe } from '../../pipes/filter.pipe';
 
 @Component({
   selector: 'app-dashboard',
@@ -55,6 +55,9 @@ export class Dashboard implements OnInit {
     birthdate: '',
     profile: 'user',
   };
+  get today(): string {
+    return new Date().toISOString().split('T')[0];
+  }
 
   // 1. Configuración BARRAS
   public barChartData: ChartConfiguration<'bar'>['data'] = {
@@ -197,11 +200,16 @@ export class Dashboard implements OnInit {
       error: (e) => console.error('Error stats:', e),
     });
   }
-
   applyFilters() {
+    // Validación extra para que no falle la lógica
+    if (this.filters.from && this.filters.to) {
+      if (this.filters.from > this.filters.to) {
+        this.modalService.show('Error', 'La fecha "Desde" no puede ser mayor a "Hasta"');
+        return;
+      }
+    }
     this.loadStats();
   }
-
   clearFilters() {
     this.filters = { from: '', to: '' };
     this.loadStats();

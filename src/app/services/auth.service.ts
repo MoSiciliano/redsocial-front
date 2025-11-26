@@ -131,7 +131,7 @@ export class AuthService {
     this.clearSessionTimers(); // Limpia timers anteriores
 
     // Timer para mostrar el modal de refresco (10 minutos)
-    const modalTimerSub = timer(60000).subscribe(() => {
+    const modalTimerSub = timer(600000).subscribe(() => {
       this.modalService.showConfirm(
         'Sesión por expirar',
         'Tu sesión vence en 5 minutos. Refrescando automáticamente...',
@@ -155,7 +155,7 @@ export class AuthService {
 
 
     //  Timer para forzar logout (15 minutos)
-    const expireTimerSub = timer(120000).subscribe(() => {
+    const expireTimerSub = timer(900000).subscribe(() => {
       this.modalService.show('Sesión Expirada', 'Tu sesión ha finalizado.');
       this.logout(); // Llama a tu método de logout
     });

@@ -5,7 +5,7 @@
 >
   <div class="flex items-start gap-4">
     <img
-      [src]="currentUser()?.imageProfile"
+      [src]="currentUser()?.imageProfile" appImgFallback
       alt="Tu avatar"
       class="h-12 w-12 rounded-full border-2 border-primary/50 object-cover"
     />

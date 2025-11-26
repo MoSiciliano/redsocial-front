@@ -10,6 +10,7 @@ import { NavbarComponent } from '../../components/nav/nav';
 import { AuthService } from '../../services/auth.service';
 import { Subscription } from 'rxjs';
 import { ModalService } from '../../services/modal.service';
+import { ImgFallbackDirective } from '../../directives/img.directive';
 
 type Publication = any;
 type Comment = any;
@@ -17,7 +18,7 @@ type Comment = any;
 @Component({
   selector: 'app-post-detail',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, NavbarComponent,  RouterLink],
+  imports: [CommonModule, ReactiveFormsModule, NavbarComponent,  RouterLink, ImgFallbackDirective],
   templateUrl: './post.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

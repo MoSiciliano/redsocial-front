@@ -8,11 +8,12 @@ import { AuthService } from '../../services/auth.service';
 import { RouterLink } from '@angular/router';
 import { CommentsService } from '../../services/comments.service';
 import { FormControl, Validators, ReactiveFormsModule}  from '@angular/forms';
+import { ImgFallbackDirective } from '../../directives/img.directive';
 
 @Component({
   selector: 'app-posts',
   standalone: true,
-  imports: [CommonModule, NavbarComponent, CreatePost, RouterLink, ReactiveFormsModule],
+  imports: [CommonModule, NavbarComponent, CreatePost, RouterLink, ReactiveFormsModule, ImgFallbackDirective],
   templateUrl: 'publications.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

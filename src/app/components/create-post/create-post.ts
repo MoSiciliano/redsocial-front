@@ -17,11 +17,12 @@ import { AuthService } from '../../services/auth.service';
 import { ModalService } from '../../services/modal.service';
 import { PublicationsService } from '../../services/publications.service';
 import { Publication } from '../../models/publication';
+import { ImgFallbackDirective } from '../../directives/img.directive';
 
 @Component({
   selector: 'app-create-post',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, ImgFallbackDirective],
   templateUrl: './create-post.html',
   styleUrls: ['./create-post.css'],
   changeDetection: ChangeDetectionStrategy.OnPush,

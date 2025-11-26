@@ -28,23 +28,8 @@ export class AuthService {
   
   
   constructor() {
-    //this.loadUserFromStorage();
   }
 
-  // private loadUserFromStorage() {
-  //   if (typeof localStorage !== 'undefined') {
-  //     // Ya no leemos el token, solo el usuario
-  //     const user = localStorage.getItem('currentUser');
-  //     if (user) {
-  //       try {
-  //         this.currentUser.set(JSON.parse(user) as User);
-  //       } catch (e) {
-  //         console.error('Error parsing user from localStorage', e);
-  //         this.logout();
-  //       }
-  //     }
-  //   }
-  // }
 
   login(credentials: Credentials): Observable<any> {
     this.isLoading.set(true);

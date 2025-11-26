@@ -5,7 +5,6 @@ import { Directive, ElementRef, HostListener, Input, OnChanges, SimpleChanges } 
   standalone: true,
 })
 export class ImgFallbackDirective implements OnChanges {
-  // Define la URL por defecto en una constante o propiedad privada
   private defaultUrl = 'https://cdn-icons-png.flaticon.com/512/149/149071.png';
 
   @Input() appImgFallback: string = ''; 
@@ -16,8 +15,14 @@ export class ImgFallbackDirective implements OnChanges {
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['src']) {
       const value = changes['src'].currentValue;
-      if (!value || value.trim() === '') {
+
+      // CASO 1: Viene vacío o nulo -> Ponemos el Fallback
+      if (!value || (typeof value === 'string' && value.trim() === '')) {
         this.setFallback();
+      } 
+      // CASO 2: Viene una URL válida -> Forzamos que se ponga en la imagen
+      else {
+        this.el.nativeElement.src = value;
       }
     }
   }
@@ -28,12 +33,11 @@ export class ImgFallbackDirective implements OnChanges {
   }
 
   private setFallback() {
-    // Si appImgFallback viene vacío (porque usaste el atributo sin valor), usamos defaultUrl
     const fallback = this.appImgFallback || this.defaultUrl;
-
+    // Solo lo cambiamos si no es ya el fallback (para evitar bucles infinitos)
     if (this.el.nativeElement.src !== fallback) {
       this.el.nativeElement.src = fallback;
-      this.el.nativeElement.srcset = '';
+      this.el.nativeElement.srcset = ''; // Limpiamos srcset por si acaso
     }
   }
 }

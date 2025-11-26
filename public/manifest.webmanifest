@@ -1,6 +1,6 @@
 {
-  "name": "red-social-front",
-  "short_name": "red-social-front",
+  "name": "SparkIt",
+  "short_name": "SparkIt",
   "display": "standalone",
   "scope": "./",
   "start_url": "./",

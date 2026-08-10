@@ -139,6 +139,41 @@ export class Dashboard implements OnInit {
     },
   };
 
+  public lineChartData: ChartConfiguration<'line'>['data'] = {
+    labels: [], // Aquí irán las fechas (ej: "10/11", "11/11")
+    datasets: [
+      {
+        data: [], // Aquí la cantidad de comentarios de ese día
+        label: 'Evolución de Comentarios',
+        fill: true,
+        tension: 0.5, // Curvatura de la línea (aesthetic)
+        borderColor: '#03dac6', // Color Teal
+        backgroundColor: 'rgba(3, 218, 198, 0.3)',
+        pointBackgroundColor: '#fff',
+        pointBorderColor: '#03dac6',
+      },
+    ],
+  };
+
+  public lineChartOptions: ChartOptions<'line'> = {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: { labels: { color: this.chartTextColor } },
+    },
+    scales: {
+      x: {
+        ticks: { color: this.chartTextColor },
+        grid: { color: 'rgba(255,255,255,0.1)' },
+      },
+      y: {
+        beginAtZero: true,
+        ticks: { color: this.chartTextColor, stepSize: 1 },
+        grid: { color: 'rgba(255,255,255,0.1)' },
+      },
+    },
+  };
+
   ngOnInit() {
     this.loadUsers();
     this.loadStats();

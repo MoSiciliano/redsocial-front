@@ -1,59 +1,40 @@
-# RedSocialFront
+# 🌐 Social Network - Frontend Client
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 20.3.8.
+![Angular](https://img.shields.io/badge/Angular-DD0031?style=for-the-badge&logo=angular&logoColor=white)
+![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white)
+![PWA](https://img.shields.io/badge/PWA-Progressive_Web_App-5A0FC8?style=for-the-badge&logo=pwa)
 
-## Development server
+> **Nota:** Este repositorio contiene únicamente el cliente Frontend. El código de la API (Backend) se encuentra en [Social Network API](https://github.com/[TU_USUARIO]/red-social-back).
 
-To start a local development server, run:
+## 📌 Descripción del Proyecto
 
-```bash
-ng serve
-```
+Aplicación web progresiva (PWA) construida con Angular que funciona como cliente para una red social completa. 
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+El sistema está diseñado con un fuerte enfoque en la experiencia de usuario (UX) y el rendimiento. Implementa consumo avanzado de APIs RESTful, manejo de estado global, seguridad de rutas basada en roles (Usuario/Administrador) y sincronización de sesiones mediante JWT (JSON Web Tokens).
 
-## Code scaffolding
+---
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+## 🚀 Funcionalidades Principales
 
-```bash
-ng generate component component-name
-```
+*   **Autenticación y Seguridad:** Flujo de Login/Registro completo. Manejo de JWT en memoria local con interceptores HTTP para enviar el token en cada petición y lógica de "Refresh Token" automático antes de su vencimiento (15 min).
+*   **Feed Dinámico:** Listado de publicaciones con **Scroll Infinito** para una carga de datos eficiente y optimizada.
+*   **Interacción Social:** Sistema de *Likes*, comentarios paginados con botón de "Cargar más", y la capacidad de guardar, compartir y editar contenido propio.
+*   **Dashboard Administrativo:** Panel exclusivo protegido por `Guards` con gestión de usuarios (Altas/Bajas lógicas) y visualización de métricas a través de gráficos dinámicos (Charts).
+*   **PWA Integrada:** La aplicación puede instalarse en dispositivos móviles y de escritorio, ofreciendo una experiencia nativa.
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+---
 
-```bash
-ng generate --help
-```
+## 🛠️ Arquitectura y Angular Features
 
-## Building
+*   **Pipes & Directivas Custom:** Implementación de al menos 3 directivas y 3 pipes propias para el formateo de datos en tiempo real y manipulación del DOM.
+*   **Interceptors:** Intercepción de respuestas HTTP para captura global de errores (401 Unauthorized, 400 Bad Request) y redirecciones automáticas.
+*   **Guards:** Protección estricta de rutas basada en la carga del payload del token.
 
-To build the project run:
+---
 
-```bash
-ng build
-```
+## ⚙️ Instalación y Entorno Local
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
-
-## Running unit tests
-
-To execute unit tests with the [Karma](https://karma-runner.github.io) test runner, use the following command:
-
-```bash
-ng test
-```
-
-## Running end-to-end tests
-
-For end-to-end (e2e) testing, run:
-
-```bash
-ng e2e
-```
-
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
-
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+1. Clonar el repositorio: `git clone https://github.com/[TU_USUARIO]/red-social-front.git`
+2. Instalar dependencias: `npm install`
+3. Configurar la URL de la API en `src/environments/environment.ts`.
+4. Ejecutar: `ng serve`

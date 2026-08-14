@@ -34,7 +34,7 @@ El sistema está diseñado con un fuerte enfoque en la experiencia de usuario (U
 
 ## ⚙️ Instalación y Entorno Local
 
-1. Clonar el repositorio: `git clone https://github.com/[TU_USUARIO]/red-social-front.git`
+1. Clonar el repositorio: `git clone https://github.com/MoSiciliano/red-social-front.git`
 2. Instalar dependencias: `npm install`
 3. Configurar la URL de la API en `src/environments/environment.ts`.
 4. Ejecutar: `ng serve`

@@ -4,7 +4,7 @@
 ![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white)
 ![PWA](https://img.shields.io/badge/PWA-Progressive_Web_App-5A0FC8?style=for-the-badge&logo=pwa)
 
-> **Nota:** Este repositorio contiene únicamente el cliente Frontend. El código de la API (Backend) se encuentra en [Social Network API](https://github.com/MoSiciliano/redsocial-front).
+> **Nota:** Este repositorio contiene únicamente el cliente Frontend. El código de la API (Backend) se encuentra en [Social Network Client](https://github.com/MoSiciliano/redsocial-front)
 
 ## 📌 Descripción del Proyecto
 
